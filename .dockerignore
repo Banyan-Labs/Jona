@@ -1,0 +1,19 @@
+# Ignore virtual environments
+.venv/
+__pycache__/
+*.pyc
+
+# Node stuff
+node_modules/
+.next/
+
+# Env files
+*.env
+.env.*
+.env.local
+
+# Misc
+.DS_Store
+*.log
+npm-debug.log
+.vscode/
