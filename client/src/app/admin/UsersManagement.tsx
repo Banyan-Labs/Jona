@@ -15,7 +15,7 @@
 //   profile_completed: boolean;
 //   subscription_type: 'free' | 'premium';
 //   location: string;
-// }
+// } yeha
 
 // type SortByOption = 'joined_date' | 'name' | 'applications_sent' | 'email';
 // type FilterStatus = 'all' | 'active' | 'inactive';
