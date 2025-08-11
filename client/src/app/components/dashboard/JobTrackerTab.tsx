@@ -12,7 +12,7 @@ export interface JobTrackerTabProps {
   darkMode: boolean;
   userId: string;
 }
-
+// fixed
 export const JobTrackerTab: React.FC<JobTrackerTabProps> = ({
   jobs,
   onJobUpdateAction,
