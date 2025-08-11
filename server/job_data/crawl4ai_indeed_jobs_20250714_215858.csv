@@ -1,0 +1,749 @@
+title,company,job_location,job_state,date,site,job_description,salary,url,applied,search_term,flat_skills,skills_by_category
+Lead iOS Developer,Aiva Health,Remote,remote,2025-07-14,Indeed,"Aiva, the Amazon- and Google-funded leader in voice-powered healthcare, is looking for a Mobile Software Engineer specializing in Swift with an interest in learning new and exciting frameworks to help us continue our rapid growth. If you’d like to help harness AI and mobile technologies for an urgent mission like improving healthcare, this is your opportunity.
+Aiva’s AI-powered Nurse Assistant mobile app lets nurses use conversational voice and text for ambient documentation, setting reminders and controlling systems including work orders, dietary, interpreter services, policies & procedures and smart devices like TVs, lights, blinds and thermostats. Clients like Cedars-Sinai Medical Center and BayCare Health have publicized their Aiva deployments across media. For example, Cedars-Sinai reports 80% faster documentation, 50% lower incidental OT, 37% higher patient satisfaction scores.
+BayCare TV spot: https://baynews9.com/fl/tampa/news/2025/02/04/artificial-intelligence-nurse-aiva-baycare
+Cedars-Sinai AMIA webinar: https://amia.org/education-events/education-catalog/25x5-webinar-series-reducing-burden-elevating-care-lessons
+Job Description
+Our ideal candidate is an experienced Swift developer who is passionate about building and shaping the future of Healthcare. Your primary focus will be developing full user-facing applications, along with individual user interface components. These will be implemented following best practices which have been established by Apple and the wider Swift ecosystem. You will ensure that these components and the overall application are robust and easy to maintain, coordinating with the rest of the team. Therefore, a commitment to collaborative problem solving, sophisticated design, and product quality is important.
+Responsibilities
+Developing new and maintaining existing features for our Swift apps (iOS and iPadOS)
+Building reusable components and code libraries
+Turning UI/UX designs into working, high quality code
+Optimizing components for a great experience across different screen form factors
+Staying up-to-date on the latest innovations within the Apple development ecosystem, and sharing that knowledge with the team
+Evaluating new tech, and determining whether it might benefit our end-user experiences and development efficiency
+Core Skills & Experience
+5+ years of Swift and Swift UI experience
+Experience with concurrent programming fundamentals and GCD
+Experience with code versioning tools and platforms (git, GitHub, etc)
+Experience with modern auth protocols, such as OAuth2 and JWT
+Experience integrating gRPC services in Swift
+Ability to understand business requirements and turn them into working technical solutions
+Ability to collaborate with other software engineering teams at Aiva
+About Us
+Aiva Health gives superpowers to healthcare staff. Our voice platform powers more than 10,000 acute and post-acute rooms across the U.S. and Canada.
+Aiva is based in Los Angeles. Hospital clients include Cedars-Sinai Medical Center, BayCare Health, Houston Methodist Hospital, Jefferson Health and Moffitt Cancer Center. Investors include Amazon and Google. We are growing quickly and looking to expand our team!
+Job Type: Full-time
+Pay: $105,000.00 - $135,000.00 per year
+Benefits:
+401(k)
+Dental insurance
+Health insurance
+Paid time off
+Vision insurance
+Compensation Package:
+Yearly pay
+Application Question(s):
+Do you have at least 5 years of experience coding for iOS?
+What originally attracted you to computers and programming, and iOS development in particular?
+Work Location: Remote",N/A,https://www.indeed.com/pagead/clk?mo=r&ad=-6NYlbfkN0AvzgCfiBwZUobqePXz-IxIZr8cCQqGz8_3Hm9KezQw5bSkx7oga4CZhn16HhTbS1evC35f0qB_tNSvLi3jYvPVT6gt32FPP2_xPHwaHSZpUTeW-K5TItDBqdafymIvsnub6LeE8ZfGjX3IvR0LYtJL-9PqyzkHD3i3TtRfuyIDq1yvP-8xjAbupPOgMHqwKf-cEFvNhlIEEFQh3ykyDoYXF0V4Wp3-nGBNQrSTALr7dbCEsiL3A1fw2h50vva2YaC4fJ8TSkyBjxZnFAWN2RZ9XjcNlVpsjGHFH5izS4JIuj3VM3LlDVrztR09POCZQ2I_yz3kk6oI78aluYycVBr9fze3uWvBj-lNOxxvGKi2Tke_RSOdE0xlc3PlcBC3_PTILPaBTeYTMynkQ1Wx4pC1yqfItaec4gC82SN8xjpn7WR-_rUV5onKNazp0fh--HfSqg9Fou46ZdLFRhZkg3dCCucXWniquZI39m_NHSDmLTGI488jkrN1ByYEa7FPo30f07VcSAcHmIurWcn3yRbUNPFYWoJGHr5wh18-GSryh2KoYMt8uDDYcPTn75psbi7C6Z9UYCuFJ-BdLhvvVLcXl0B80Hzjmk_CTefBGaxOIQs6GIb8u4coyKW7hL1bq1Xj-MIjUpnFiy-zj6dVU31v&xkcb=SoBE6_M3vFxtVTyUUZ0LbzkdCdPP&camk=ethIe0s0hed_ePgBtwlCng==&p=0&fvj=0&vjs=3,False,software engineer,"['ai', 'documentation', 'git', 'github', 'ios development', 'problem solving', 'swift', 'user interface']","{'Languages & Scripting': ['go', 'r', 'swift'], 'Frontend Frameworks & Libraries': ['lit'], 'Mobile Development': ['ios'], 'Backend & API': ['rest', 'grpc'], 'Security & Identity': ['oauth2', 'jwt', 'rsa', 'sso'], 'Soft Skills': ['problem solving', 'vision', 'innovation']}"
+Lead iOS Developer,Aiva Health,Remote,remote,2025-07-14,Indeed,"Aiva, the Amazon- and Google-funded leader in voice-powered healthcare, is looking for a Mobile Software Engineer specializing in Swift with an interest in learning new and exciting frameworks to help us continue our rapid growth. If you’d like to help harness AI and mobile technologies for an urgent mission like improving healthcare, this is your opportunity.
+Aiva’s AI-powered Nurse Assistant mobile app lets nurses use conversational voice and text for ambient documentation, setting reminders and controlling systems including work orders, dietary, interpreter services, policies & procedures and smart devices like TVs, lights, blinds and thermostats. Clients like Cedars-Sinai Medical Center and BayCare Health have publicized their Aiva deployments across media. For example, Cedars-Sinai reports 80% faster documentation, 50% lower incidental OT, 37% higher patient satisfaction scores.
+BayCare TV spot: https://baynews9.com/fl/tampa/news/2025/02/04/artificial-intelligence-nurse-aiva-baycare
+Cedars-Sinai AMIA webinar: https://amia.org/education-events/education-catalog/25x5-webinar-series-reducing-burden-elevating-care-lessons
+Job Description
+Our ideal candidate is an experienced Swift developer who is passionate about building and shaping the future of Healthcare. Your primary focus will be developing full user-facing applications, along with individual user interface components. These will be implemented following best practices which have been established by Apple and the wider Swift ecosystem. You will ensure that these components and the overall application are robust and easy to maintain, coordinating with the rest of the team. Therefore, a commitment to collaborative problem solving, sophisticated design, and product quality is important.
+Responsibilities
+Developing new and maintaining existing features for our Swift apps (iOS and iPadOS)
+Building reusable components and code libraries
+Turning UI/UX designs into working, high quality code
+Optimizing components for a great experience across different screen form factors
+Staying up-to-date on the latest innovations within the Apple development ecosystem, and sharing that knowledge with the team
+Evaluating new tech, and determining whether it might benefit our end-user experiences and development efficiency
+Core Skills & Experience
+5+ years of Swift and Swift UI experience
+Experience with concurrent programming fundamentals and GCD
+Experience with code versioning tools and platforms (git, GitHub, etc)
+Experience with modern auth protocols, such as OAuth2 and JWT
+Experience integrating gRPC services in Swift
+Ability to understand business requirements and turn them into working technical solutions
+Ability to collaborate with other software engineering teams at Aiva
+About Us
+Aiva Health gives superpowers to healthcare staff. Our voice platform powers more than 10,000 acute and post-acute rooms across the U.S. and Canada.
+Aiva is based in Los Angeles. Hospital clients include Cedars-Sinai Medical Center, BayCare Health, Houston Methodist Hospital, Jefferson Health and Moffitt Cancer Center. Investors include Amazon and Google. We are growing quickly and looking to expand our team!
+Job Type: Full-time
+Pay: $105,000.00 - $135,000.00 per year
+Benefits:
+401(k)
+Dental insurance
+Health insurance
+Paid time off
+Vision insurance
+Compensation Package:
+Yearly pay
+Application Question(s):
+Do you have at least 5 years of experience coding for iOS?
+What originally attracted you to computers and programming, and iOS development in particular?
+Work Location: Remote",N/A,https://www.indeed.com/pagead/clk?mo=r&ad=-6NYlbfkN0AvzgCfiBwZUobqePXz-IxIZr8cCQqGz8_3Hm9KezQw5bSkx7oga4CZhn16HhTbS1evC35f0qB_tNSvLi3jYvPVT6gt32FPP2_xPHwaHSZpUTeW-K5TItDBqdafymIvsnub6LeE8ZfGjX3IvR0LYtJL-9PqyzkHD3i3TtRfuyIDq1yvP-8xjAbu4IiTwHIfcWmUt7tURuUovivbHXny49XoaER8qQxejcOnPYLJsVJ9PUFGORm5rBu3PRLa9MoNd2v8ZN-MtvZXFLyurZHjPVcJD897nM0hnN72JoNH_Zjp_tgAZ6FU-LPhDdLGf-db3JkCCncg2e7REtKusBCwpikCo5mxOeRyku0_5mxj9F3ZxX6a4KJwjiFo2qn15UOEkyVxsV1a4qaTlsp5n9efQuRJvYQrsL8rvb5tzU9LFio6Pc3lCgYrVijR_DKCdOfr_Q-BqzwBKtPok1887-KnbP_M5WgkEpKgZGm5OOdmI3HcumLzzzptjoEbL3z0Edo3osMfYImf75hMhSLsbqGzeBVkAR1nbbqxymaQR_Gwa2qzWKbUwpzwE3T0YG1vCPczbPgFvcOCajxBIkC7OxLfu0j1SkaHw7_AnGIGAUOygbuiWmz2pp3SaZk64VZxnix03WzpH42MP10-ZOJVYLmpZMiyw2twmcuGQSw=&xkcb=SoAC6_M3vFxo9zS8SR0LbzkdCdPP&camk=ethIe0s0hed_ePgBtwlCng==&p=0&fvj=0&vjs=3,False,front-end developer,"['ai', 'documentation', 'git', 'github', 'ios development', 'problem solving', 'swift', 'user interface']","{'Languages & Scripting': ['go', 'r', 'swift'], 'Frontend Frameworks & Libraries': ['lit'], 'Mobile Development': ['ios'], 'Backend & API': ['rest', 'grpc'], 'Security & Identity': ['oauth2', 'jwt', 'rsa', 'sso'], 'Soft Skills': ['problem solving', 'vision', 'innovation']}"
+Senior .NET Developer with Experience in Progress Sitefinity Backend Development,Astriata,Remote in Maryland,remote in maryland,2025-07-14,Indeed,"Are you a Maryland-based expert in Sitefinity CMS back-end development with a strong understanding of software engineering principles who enjoys working closely with cross-functional teams to deliver high-quality software solutions that meet business objectives? Do you want to be part of a team of leaders, ready to take on new challenges? If yes, then you’re the developer we want on our team.
+We are a team of curious people and life-long learners that love creative problem solving. We’re detail-oriented, self-motivated, and passionate about creating great user experiences. We go above and beyond and are willing to pivot and listen to constructive feedback. We are looking for a Senior Back-end Developer and Software Engineer to build intuitive websites and applications across the association, higher-education, healthcare, nonprofit, and government sectors in Sitefinity. Other .NET CMS experience is a plus. As a Senior Back-end Developer and Software Engineer, you will play a crucial role in designing, developing, and maintaining complex software applications and systems.
+Responsibilities
+Back-end Development
+Develop and maintain back-end components for Sitefinity.
+Write clean, efficient, and maintainable code using modern programming languages and frameworks.
+Develop server-side logic and databases to ensure high performance and data integrity.
+Implement security and data protection measures.
+Architecture and Design
+Collaborate with the architecture team to design scalable and robust software solutions.
+Create technical specifications and architectural diagrams for software projects.
+Front-End Development
+Design and implement user interfaces that are visually appealing, responsive, and user-friendly.
+Ensure cross-browser and cross-platform compatibility.
+Integration and APIs
+Integrate third-party services, APIs, and external data sources as required.
+Develop and maintain RESTful APIs for internal and external use.
+Testing and Quality Assurance
+Write unit tests and conduct code reviews to ensure code quality.
+Debug and resolve software defects and issues.
+Performance Optimization
+Identify and address performance bottlenecks in the application.
+Optimize database queries and application code for speed and scalability.
+Documentation
+Create and maintain technical documentation, including code documentation, API documentation, and system documentation.
+Collaboration
+Collaborate with cross-functional teams, including product managers, designers, and other developers, to deliver high-quality software solutions.
+Mentor and provide guidance to more junior developers.
+Continuous Learning
+Stay up-to-date with industry trends, emerging technologies, and best practices in software development.
+Share knowledge and expertise with the development team.
+Requirements
+Bachelor's degree in Computer Science, Software Engineering, or a related field (Master's degree preferred).
+Proven experience as a Full-Stack Developer or Software Engineer, with a minimum of 5 years in senior roles.
+Proficiency in front-end technologies such as HTML5, CSS3, JavaScript, and popular frameworks like React, Angular, or Vue.js.
+Strong expertise in back-end technologies and frameworks, such as ASP.NET, .net Core, and PHP
+Extensive experience with databases (SQL and NoSQL) and data modeling a plus.
+Familiarity with cloud platforms (e.g., AWS, Azure, Google Cloud) and containerization (e.g., Docker, Kubernetes).
+Solid understanding of software development methodologies (e.g., Agile, Scrum) and version control systems (e.g., Git).
+Expertise in Sitefinity.
+Expertise in in other content management systems such as Kentico, Umbraco, SiteCore, WordPress and Craft are a plus.
+Excellent problem-solving skills and the ability to work in a fast-paced, collaborative environment.
+Strong written and verbal communication and excellent teamwork skills.
+Relevant certifications (e.g., AWS Certified Developer, Microsoft Certified: Azure Developer) a plus.
+Must be located in Maryland and/or with the ability to travel for on-site meetings 1-2x per year.
+Must submit URLs of Sitefinity sites that are an example of back-end work as the primary developer.
+** No phone calls, freelancers or recruiters, please. **
+Job Type: Full-time
+Pay: $100,000.00 - $125,000.00 per year
+Benefits:
+401(k)
+Dental insurance
+Health insurance
+Paid time off
+Vision insurance
+Compensation Package:
+Performance bonus
+Schedule:
+8 hour shift
+Monday to Friday
+Work Location: Remote",N/A,https://www.indeed.com/pagead/clk?mo=r&ad=-6NYlbfkN0AVAa3azzSONpd6YcSmOLGITXV1sAaoFKPyzf4UMNeoBFDSLem72rJvyDYO3ZFWm-ApjNL7SxTH8d8ofs0vICO7m8ZkmKd4vhX0mTz3-Nl1AngEUXiqTFWZeAFKMQdrg2pQiFN1igyMFYbAi7dZR0VCCV6-4I4GkAI_pyMPgL3fbn8VduLY5kFkEgtW9IJCB_tIDqeqFUeO20RnapcCmmCA5CEa5mDAryCHFfjXcurh52YmAyvQqayaLRVg-wig5sk4W0nGS9FOdLlT7PYpnMWN8qMd7QDmL1IDAs-2ROYBbhjCesGVHMUsVXItSwGfMeIL6KND2OaOmauLMjXTILJ1AjIaeYl7cXP00_uYVhLEt-nkr-68l1-t0gp54_KZsw2KIILSKRDNLnPM-iYc2j2W21za9hBdK-WCNktEjVYghklUe84zT3LxbamX_0ywhCuKKIFDetXNdFN5j0y3SlZubAhEGSpqceukXgW12Wz1y8xbK03_dNY-IBqsbogEL7DmUTDw1Y7QeSAqM0ZfxaSbuegl9DbHP0K6ju4HjVbEZALfV4KH1YAfd40QHziryvuzEda7DDdEA-fZv9vfXQ5VKF6CnUG6pUGkQxyHUcTRDSQMUeVEDn_PrqOnTjxxWrBesko5pv7uvM1TEqEsGj3iP4iBHLFDAxDYoLZ3rmfxcF5sT7zJlnj0fecgmy8oU5Lj-9_iXr-XQLUg_zOezgMFb3QlBt_scLYad6QZPiP-1g==&xkcb=SoC26_M3vFxo9zS8SR0KbzkdCdPP&camk=ethIe0s0hedl1NZyhHsXug==&p=1&fvj=0&vjs=3,False,front-end developer,"['agile', 'angular', 'asp.net', 'aws', 'azure', 'cms', 'collaboration', 'communication', 'containerization', 'content management', 'cross-functional teams', 'docker', 'documentation', 'git', 'go', 'kubernetes', 'problem solving', 'react', 'scrum', 'security', 'sql', 'teamwork', 'testing', 'version control', 'vue.js', 'wordpress']","{'Languages & Scripting': ['javascript', 'sql', 'html', 'css', 'go', 'java', 'r', 'scala'], 'Frontend Frameworks & Libraries': ['react', 'vue.js', 'angular', 'lit'], 'Backend & API': ['rest'], 'Cloud & Infrastructure': ['aws', 'azure', 'kubernetes', 'docker'], 'DevOps & CI/CD': ['version control'], 'Security & Identity': ['sso'], 'Testing & QA': ['ava'], 'Dev Practices & Concepts': ['agile', 'scrum', 'technical documentation'], 'Soft Skills': ['problem solving', 'communication', 'teamwork', 'collaboration', 'vision']}"
+"Full-Stack Software Engineer (iOS, Web, Backend & Algorithms)","EpiWatch, Inc.",Remote,remote,2025-07-14,Indeed,"Job Title: Full-Stack Software Engineer (iOS, Web, Backend & Algorithms)
+Location: Remote, Hybrid Optional (Baltimore)
+About EpiWatch:
+EpiWatch is a pioneering SAMD (Software as a Medical Device) company dedicated to developing transformative technology for epilepsy management. We've recently developed and obtained FDA clearance for a groundbreaking seizure detection algorithm and application for the Apple Watch and iPhone, already demonstrating performance 10x better than the current state-of-the-art for tonic-clonic seizures.
+We are now developing novel algorithms and products for epilepsy management and seizure detection in the rapidly evolving field of health wearables. Our mission is to empower individuals with epilepsy and their care teams with this cutting-edge, life-changing technology. We're a small, agile, and deeply committed team looking to tackle challenging problems that deliver outsized positive impact.
+The Opportunity:
+At EpiWatch, you'll be a pivotal member of a small and dedicated team, directly contributing and influencing the development and deployment of technologies that have a profound impact on people's lives. You will be instrumental in shaping our entire software ecosystem, from the native iOS and WatchOS application, to our user-facing web dashboard and robust backend services, to algorithm development and deployment. If you're driven by complex challenges, passionate about innovation, and are looking to make an outsized impact, this is the place for you.
+What You'll Do (Key Responsibilities):
+iOS Application Development: Design, develop, test, and maintain the EpiWatch iOS application using Objective-C, Swift, and SwiftUI within Xcode, ensuring a seamless and intuitive user experience.
+Web Application Development: Design, develop, and enhance our responsive web dashboard using React (Typescript), enabling users to manage their seizure data, generate reports, and connect with their physicians.
+Backend Development & API Integration: Contribute to the design, development, and maintenance of our backend services using Java (primarily Spring Boot), creating and modifying APIs for both the mobile and web frontends.
+Cloud Infrastructure Management: Work with our AWS cloud environment, contributing to the deployment, scaling, and maintenance of our backend services. Experience with AWS CDK is a significant plus.
+Algorithm Development & Deployment: Collaborate on the development, refinement, and deployment of novel seizure detection and management algorithms, translating research into real-world application.
+Full-Stack Problem Solving: Engage in all phases of the software development lifecycle, from conceptualization and design through to deployment and iteration, taking ownership of your contributions.
+Agile Collaboration: Work closely with a small, high-performing team in a fast-paced environment, contributing ideas and adapting quickly to new challenges and priorities.
+Independent Contribution: While support and collaboration are key, you will be expected to drive much of your work independently, demonstrating initiative and strong problem-solving skills.
+Who We're Looking For (Requirements):
+Necessary Qualifications (Must-Haves):
+Proven experience in iOS development with working proficiency in Objective-C, Swift, SwiftUI, and Xcode.
+Demonstrable experience shipping and maintaining native mobile applications.
+Solid experience in frontend web development using React and JavaScript.
+Strong understanding and working experience with Java for backend development.
+Experience with AWS cloud services (e.g., EC2, S3, Lambda, RDS).
+A genuine interest and foundational experience in algorithm development and deployment.
+An insatiable curiosity, a passion for learning, and a proactive, self-starter attitude.
+Ability to thrive in a fast-paced, dynamic environment and manage multiple priorities.
+Excellent problem-solving skills and attention to detail.
+Strong communication and collaboration skills.
+Bachelor’s degree in Computer Science, Engineering, or a related field, OR equivalent compelling practical experience.
+Desired Qualifications (Nice-to-Haves):
+Experience with Spring Boot framework.
+Experience with AWS CDK (Cloud Development Kit).
+A solid understanding of software architecture principles and best practices.
+Experience working in the MedTech, digital health, or a regulated (e.g., FDA, CE) environment.
+Familiarity with SAMD (Software as a Medical Device) principles.
+Experience with machine learning pipelines or deploying ML models.
+Contributions to open-source projects or a portfolio of personal projects.
+Why Join EpiWatch?
+Make a Tangible Impact: Your work will directly contribute to improving the lives of individuals with epilepsy.
+Cutting-Edge Technology: Develop completely novel algorithms and work at the forefront of wearable health technology.
+Unparalleled Growth: Gain broad experience across the full stack (iOS, web, backend, cloud, algorithms) and rapidly hone your skills in a challenging and supportive environment.
+Elite Team Culture: Be part of a small, highly skilled, and mission-driven team that values innovation, speed, and collaboration. We tackle the toughest challenges that make the biggest difference.
+Autonomy and Ownership: Take significant ownership of your projects and see your contributions come to life.
+Competitive Compensation Package.
+Ready for the Challenge?
+If you're an exceptional engineer who is passionate about building technology that matters and wants to be part of a team that's making a real difference, we want to hear from you.
+Apply now to join the EpiWatch mission!
+Job Types: Full-time, Contract
+Pay: $80,000.00 - $110,000.00 per year
+Benefits:
+Health savings account
+Compensation Package:
+1099 contract
+Stock options
+Yearly pay
+Schedule:
+Monday to Friday
+Work Location: Remote",N/A,https://www.indeed.com/rc/clk?jk=0c3ca4ed1b8995e7&bb=qT6LoydPEKStUEGOafj5h9WoFTwz-hrEtjVs7LPXCFQ4RD9H9apLQ1hQaiqNzMY0XVnVLRwhJXyQo4F_x8JOlnpzrcmznJ61UxhuzTfuQZwKxcJpQ-MKntfBnJVZRgPaCbDGORsCccJ4foLvot8UXA%3D%3D&xkcb=SoDf67M3vFxo9zS8SR0JbzkdCdPP&fccid=55ba9c8f24c4c780&cmp=EpiWatch%2C-Inc.&ti=Full+Stack+Developer&vjs=3,False,front-end developer,"['agile', 'attention to detail', 'aws', 'collaboration', 'communication', 'ec2', 'frontend', 'innovation', 'ios development', 'machine learning', 'objective-c', 'problem solving', 'react', 's3', 'spring boot', 'swift', 'typescript', 'user experience', 'xcode']","{'Languages & Scripting': ['javascript', 'typescript', 'go', 'java', 'r', 'swift', 'objective-c'], 'Frontend Frameworks & Libraries': ['react', 'lit'], 'Mobile Development': ['ios', 'xcode'], 'Backend & API': ['rest', 'spring boot'], 'Cloud & Infrastructure': ['aws'], 'Testing & QA': ['ava', 'pact'], 'Dev Practices & Concepts': ['agile'], 'Soft Skills': ['problem solving', 'communication', 'collaboration', 'initiative', 'attention to detail', 'curiosity', 'innovation']}"
+Outsystems Developer,Cohesion IB,Remote,remote,2025-07-14,Indeed,"Company Overview:
+Cohesion is a Proptech innovator that has developed an intelligent building platform, integrating access, visitor, document, and maintenance management into a single, seamless solution. Our platform is transforming the way buildings are managed, enhancing efficiency, and improving the experience for all building stakeholders.
+Job Summary:
+We are looking for a skilled OutSystems Developer to join our dynamic team and play a pivotal role in the development of the Cohesion Smart Building platform. This is a fully remote, project-based bench role for upcoming project opportunities.
+Key Responsibilities:
+1. Development:
+Design, develop, and maintain customer and internal-facing features and modules using the OutSystems Multi-Experience Development Platform.
+Write clean, efficient, and maintainable code to support the continuous enhancement of our platform.
+2. Testing and Quality Assurance:
+Develop unit tests to ensure code quality and robustness.
+Conduct thorough code reviews to maintain coding standards and best practices.
+3. Collaboration and Support:
+Work closely with cross-functional teams, including product managers, designers, and other developers, to understand requirements and deliver high-quality software solutions.
+Provide technical support and troubleshooting for the Cohesion Smart Building platform as needed.
+Qualifications:
+A minimum of 5 years of experience in software development.
+At least 2 years of hands-on experience with the OutSystems platform.
+Strong knowledge of relational databases such as MS SQL and PostgreSQL.
+Proficiency in working with APIs and web services, including REST and preferably SOAP.
+Solid understanding of front-end technologies, including HTML, CSS, and JavaScript.
+Experience with .NET C# is highly desirable.
+Preferred Qualifications:
+Bachelor’s degree in Data Science, Computer Science, Information Systems, or a related field.
+OutSystems Certification: Web Associate Developer or Higher
+Expert with OutSystems Service Studio & Integration Studio
+Job Type: Part-time
+Expected hours: No more than 40 per week
+Benefits:
+Flexible schedule
+Lunch & learns
+On-the-job training
+Compensation Package:
+1099 contract
+Hourly pay
+Schedule:
+No nights
+No weekends
+Work Location: Remote",N/A,https://www.indeed.com/rc/clk?jk=1ec607b6d797b0a4&bb=qT6LoydPEKStUEGOafj5hzJEwwDqKqDHqG7KGqW8LOYhYkqZCIz4o8eMhOz4VAAhUo9sbzIY67YVbXqtYPwfwUbyvBZOmbPpqL9_VBeECnpKkdP7jEE1suIglMhoDgTmf2dghvU0k_ftzInVheY7FA%3D%3D&xkcb=SoBr67M3vFxo9zS8SR0IbzkdCdPP&fccid=d2ff3e62254660e7&cmp=Cohesion-IB&ti=Developer&vjs=3,False,front-end developer,"['collaboration', 'cross-functional teams', 'css', 'data science', 'html', 'postgresql', 'soap', 'sql', 'testing']","{'Languages & Scripting': ['javascript', 'sql', 'html', 'css', 'java', 'r'], 'Frontend Frameworks & Libraries': ['lit'], 'Backend & API': ['rest', 'soap', 'soa'], 'Databases & Storage': ['postgresql'], 'Security & Identity': ['sso'], 'Testing & QA': ['ava'], 'Soft Skills': ['collaboration']}"
+Mid-Level Angular/Java Software Engineer (DCRA) – Remote,"CyOne, Inc.","Remote in Aberdeen, MD","remote in aberdeen, md",2025-07-14,Indeed,"Description:
+
+CyOne, Inc. is seeking a Mid-Level Full Stack Software Engineer with expertise in Angular and Java to support a long-term Department of Defense program. The role involves developing and maintaining secure, scalable, and high-performance web applications in a dynamic and mission-driven environment. The engineer will work as part of a multi-company development team in an Agile DevSecOps environment.
+This is a remote position.
+NOTE: Only U.S. Citizens with no dual citizenship are eligible. Must be eligible for a DoD Secret clearance at minimum; active Secret or TS/SCI clearance strongly preferred.
+Requirements:
+
+Key Responsibilities
+Full stack development using Java (backend) and Angular (frontend) frameworks
+Develop and maintain RESTful APIs and support microservices architecture
+Integrate applications with SQL and NoSQL databases
+Participate in the full software development lifecycle in an Agile environment
+Implement CI/CD practices using Jenkins, GitLab, or Azure DevOps
+Follow secure coding practices and support remediation of vulnerabilities
+Collaborate with distributed development teams to support integration, deployment, and testing activities
+
+Minimum Qualifications
+U.S. Citizenship (no dual citizenship allowed)
+Eligible for DoD Secret clearance; active clearance preferred
+10+ years of overall software engineering experience
+5+ years of recent experience with:
+Java (Spring Boot or equivalent)
+Angular (v10+ or higher)
+RESTful API development
+SQL/NoSQL database integration
+JSON and modern web development standards
+Experience with Agile development (Scrum/Kanban), Git repositories, and CI/CD pipelines
+
+Preferred Qualifications
+Active DoD Secret or TS/SCI clearance
+Experience with:
+Electron-based applications
+Opensearch, Prometheus, Grafana
+Google Remote Procedure Call (gRPC)
+Hydra or similar integrated software platforms
+Secure coding and system hardening practices
+About CyOne, Inc.
+CyOne is a veteran-founded small business specializing in agile software development, ISR integration, and cyber mission support for defense and intelligence customers. Our experienced team builds practical, mission-oriented tools that directly support warfighters and analysts in the field.
+What We Offer
+100% Remote Work (U.S.-based only)
+Competitive Compensation and Bonus Opportunities
+Full Benefits Package (medical, dental, vision, 401k match)
+Paid Time Off and Flexible Scheduling
+Collaborative, high-performance technical team
+Opportunity to contribute to meaningful national security work
+Security Clearance Requirement
+U.S. Citizenship required
+Must be eligible for DoD Secret clearance (active Secret or TS/SCI strongly preferred)",N/A,https://www.indeed.com/rc/clk?jk=c4c5bddb80a7d718&bb=qT6LoydPEKStUEGOafj5h2dLQlAPQTKdl4-b5YfHbj8--CV5SqjrPYw1sxQmb3s3ADjuPCZmMODTLjJc4mfdIrNxLJM-GcbFHw_Dg_iUnxAHllUM2oRfkIBFJmmXdFl8NQch6BIvfox-w82A0Xpr9w%3D%3D&xkcb=SoDl67M3vFxo9zS8SR0PbzkdCdPP&fccid=d84ff0b2eb9e8305&vjs=3,False,front-end developer,"['agile', 'angular', 'azure', 'devops', 'electron', 'frontend', 'git', 'gitlab', 'jenkins', 'json', 'kanban', 'microservices', 'remote work', 'scrum', 'security', 'spring boot', 'sql', 'testing']","{'Languages & Scripting': ['sql', 'go', 'java', 'json', 'r', 'scala'], 'Frontend Frameworks & Libraries': ['angular', 'lit'], 'Backend & API': ['rest', 'grpc', 'spring boot', 'microservices'], 'Cloud & Infrastructure': ['azure'], 'DevOps & CI/CD': ['jenkins', 'ci/cd'], 'Testing & QA': ['ava'], 'Dev Practices & Concepts': ['agile', 'scrum', 'devops'], 'Soft Skills': ['vision']}"
+Mobile Application Developer,DiVino,"Remote in Washington, DC","remote in washington, dc",2025-07-14,Indeed,"Job Summary
+Partnership opportunity. We are seeking a skilled Mobile Developer. The ideal candidate will have a strong background in mobile application development and a passion for creating innovative and user-friendly applications. You will be responsible for designing, developing, and maintaining mobile applications that enhance user experience and meet business objectives.
+Responsibilities
+Design and develop high-quality mobile applications for iOS and Android platforms.
+Collaborate with cross-functional teams to define, design, and ship new features.
+Ensure the performance, quality, and responsiveness of applications.
+Identify and fix bugs, ensuring the best possible performance, quality, and responsiveness of the application.
+Work closely with UX/UI designers to implement responsive web design principles.
+Participate in code reviews to maintain code quality and share knowledge with team members.
+Stay updated with the latest industry trends and technologies to ensure our applications remain competitive.
+Skills
+Proficiency in JSP, XML, Ruby on Rails, ASP.NET, and MVC frameworks.
+Strong understanding of web development principles and responsive web design.
+Experience with PostgreSQL for database management.
+Familiarity with the Spring framework is a plus.
+Excellent problem-solving skills and attention to detail.
+Ability to work collaboratively in a team environment while also being self-motivated.
+Strong communication skills to effectively convey ideas and collaborate with team members.
+* MUST LIVE IN THE DMV AREA*
+Join us in creating exceptional mobile experiences that delight users!
+Job Type: Part-time
+Pay: From $10,000.00 per year
+Benefits:
+Employee discount
+Work Location: Remote",N/A,https://www.indeed.com/rc/clk?jk=44934470d57e5771&bb=qT6LoydPEKStUEGOafj5h9UVtxPI--nPmfx7rK565Dm_hQTVwI2nEF0md4HdtVjf6xlPgLMCfsQwTfEflmIecemcKOYmDdvzwuapp2QcCfYUyhSYR0zq9b37VgPV4e-kbWl_Tbz265cCmvOnSvEEDg%3D%3D&xkcb=SoBR67M3vFxo9zS8SR0ObzkdCdPP&fccid=7e16a8075191acd4&cmp=Divino&ti=Mobile+Developer&vjs=3,False,front-end developer,"['asp.net', 'attention to detail', 'communication', 'cross-functional teams', 'database management', 'postgresql', 'ruby', 'ruby on rails', 'user experience', 'xml']","{'Languages & Scripting': ['sql', 'xml', 'r'], 'Frontend Frameworks & Libraries': ['lit'], 'Mobile Development': ['android', 'ios'], 'Backend & API': ['ruby on rails'], 'Databases & Storage': ['postgresql'], 'Soft Skills': ['communication', 'attention to detail']}"
+[Remote] Director of Engineering,Convoso,Remote,remote,2025-07-14,Indeed,"Convoso is a leading AI-powered contact center platform purpose-built for revenue teams. Since 2006, Convoso has remained at the forefront of innovation, consistently developing solutions to drive customer growth while supporting adherence to regulatory standards.
+Who We Are:
+While headquartered in Los Angeles, the Convoso team can be found around the globe working in either a hybrid and remote capacity. Awarded as a ""best place to work"" company, our culture fosters team integrity, positive persistence, and continuous growth.
+
+Our core platform powers successful sales teams across multiple industries, giving our customers a competitive edge and streamlined productivity. With built-in Al and automations, our product is a premium offering in a competitive space. We continue to grow our product capabilities to better serve our current customers and to expand into newer markets.
+
+Convoso is looking for people who are excited about technology and innovation. We are a company of motivated team players with diverse backgrounds driving accelerated growth in a supportive, positive culture.
+Most roles at Convoso function as ""hybrid"" with some opportunities for travel to in-person business events and company meetings. For remote positions, Convoso's U.S. hiring is open to candidates who are residents of the following states: AL, AZ, CA, CO, CT, FL, GA, IL, IN, MA, MI, NC, NJ, NV, NY, OH, PA, SC, TX, UT, VA.
+The Job:
+We're searching for a visionary Director of Engineering to lead our talented team in shaping the future of our SaaS platform. This pivotal role is for a strategic leader passionate about building scalable, high-performing software solutions that deliver exceptional value to our customers, while fostering a culture of innovation, collaboration, and technical excellence.
+What You'll Be Doing:
+Direct Engineering teams to ensure process efficiency, effective resource allocation, product quality, and achievement of milestones and deadlines.
+Identify and track metrics that can be used to ensure quality objectives are met and recommend process improvements.
+Continuously evolve and define policies and procedures leading to a transparent, flexible, and predictable development process. Ensure the developers understand and follow the relevant policies and procedures.
+Support the other Engineering groups (QA, Project Management, DevOps), Product and CS departments by providing transparency and regular reporting on the projects progress, roadblocks, dependencies, scope & priority change and its effects.
+Manage the Backlog and the Sprint, ensure tickets are worked on in the appropriate order depending on the timing of the Release, unplanned tasks and business priority changes.
+Create KPIs that define measurable success for the development team. Hold the team accountable to KPI targets and communicate with leadership on development team performance.
+Interface with other groups and departments to remove impediments and roadblocks that could affect Engineering timelines, proactively discover dependencies and blind spots.
+Coach team members, help them grow personally and professionally, review team's performance, implement and track individual and group KPIs.
+Work with leadership to ensure appropriate scaling of the development teams to meet company business objectives by providing data-driven recommendations for additional headcount, tooling, or other investments.
+Lead or assist with the software and infrastructure architecture, plan for Tech Debt minimization, implement solid security solutions and OWASP Top 10.
+Hands-on on emergencies, outages and highly sensitive platform issues, high availability as a first responder, perform root-cause analysis and make recommendations for improvements.
+Collaborate with QA:
+Keep them humming with continuous QA
+Help them understand the test cases and expected functionality
+Assist them with hard to reproduce issues.
+Offer assistance in estimating the QA effort.
+Collaborate with DevOps:
+Understand hardware requirements and constraints
+Ensure the two teams do not bottleneck each other during cross-departmental projects
+Understand how the engineering project fits into the broader technology environment and ensure DevOps is prepared to support engineering projects.
+Collaborate with Product:
+Provide research time and technical details for PRDs completion
+Identify edge cases
+Identify roadblocks, 3rd party dependencies and plan accordingly
+Collaborate with CS:
+Ensure timely replies to their issues and concerns
+Keep them updated on the status
+Who You Are:
+10+ years in a SaaS environment as a Senior Developer / hands-on Tech Lead, coding scalable, high-quality, high-availability applications handling large datasets:
+4+ years with PHP and MVC frameworks such as Symfony, Zend, or Laravel
+7+ years with MySQL or other relational databases
+3+ years in HTML, Javascript, and CSS and experience with front end Javascript frameworks such as Angular, React, or Vue.js
+Experience working with additional languages is a plus: Python, Node.js, C++, Perl
+5+ years in a software development team leadership position as a Manager / Team Lead / Director, ensuring the team delivers on time, budget and quality.
+Flexible schedule, able to manage distributed developers on different continents and time zones.
+Extensive experience having managed complex software projects from ideation and design to post release support and maintenance, understanding how business priorities affect the development pipeline, remove roadblocks and communicate ETA changes.
+Proven track record of creating, adopting, improving and adhering to sound development principles and practices.
+Experience with growing the team by scouting, interviewing, testing, onboarding, coaching and continuously assessing the performance of the developers.
+Extensive experience working in an environment with highly agile cross functional teams, including QA and DevOps.
+Deep understanding and experience with AGILE framework, including SCRUM and Kanban methodologies.
+Proven ability to collaborate with Product on application design, requirements completion, research and successive project iterations.
+Strong communication skills (verbal and written) – must be able to communicate at a business and technical level with internal teams, customers, partners and executives.
+BSc/MSc in Engineering, Computer Science or equivalent practical experience.
+Work Perks Worth The Hype:
+Competitive compensation package
+Stock options
+100% covered premiums for employees; Medical, Dental, Basic life insurance, Long term disability
+Affordable Vision plan and optional FSA
+PTO, Paid Sick Time, Holidays, Bereavement time, Parental Leave
+Your birthday off
+401k program with generous company match
+No cost Employee Assistance Program and Travel Assistance
+Monthly Gym membership reimbursement
+Monthly credits toward food & beverage
+Company Outings
+On and offsite team building events
+Paid training for departments
+Apple laptop (most roles)
+And a team of highly experienced and kind colleagues!
+HQ Office:
+Casual office environment & dress
+Daily catered lunches
+Fully stocked kitchen (Dietary restriction-friendly)
+Happy Hours
+Monthly Massages
+On-site Car Wash
+Free Parking
+Compensation:
+The base salary range is: $220,000 - $240,000
+The Base Pay Range for this position is based on the industry benchmark for position, function, level and the company's compensation strategies. However, final offers may vary from the amount listed based on geography, candidate experience and expertise, and other objective business. Convoso's compensation package also includes equity for all eligible U.S full time roles and exceptional benefits, including generous 401k match.
+Your California Privacy Rights:
+As a California resident who is an applicant to be an employee of Convoso, you have certain rights under California law with respect to information collected by Convoso in the course and scope of its evaluation of your application. The types of information Convoso collects and your rights with respect to that information are contained in Convoso's privacy policy, which you can review by going to https://www.convoso.com/privacy-policy/.",N/A,https://www.indeed.com/rc/clk?jk=6d834aa77f57bf29&bb=qT6LoydPEKStUEGOafj5h2k6si3rqb4oR3MQztpAZwSCR-aocGyPSd0zvKCyZ5BHsDVdz0k0hOk_WiFmXjhKtZjBWd2Ko4Hs5_TXuw9YkpgWsXXm7sic5jRLuNtsqb5M0eNTmHL9X_lrCO1bMoHS9A%3D%3D&xkcb=SoDM67M3vFxo9zS8SR0NbzkdCdPP&fccid=1d87aaca0a25481a&vjs=3,False,front-end developer,"['agile', 'ai', 'angular', 'collaboration', 'communication', 'css', 'devops', 'high availability', 'html', 'innovation', 'kanban', 'laravel', 'leadership', 'mysql', 'node.js', 'productivity', 'project management', 'python', 'react', 'scrum', 'security', 'testing', 'vue.js']","{'Languages & Scripting': ['python', 'javascript', 'sql', 'html', 'css', 'c++', 'go', 'java', 'perl', 'r', 'scala'], 'Frontend Frameworks & Libraries': ['react', 'vue.js', 'angular', 'lit'], 'Backend & API': ['node.js', 'rest', 'laravel', 'symfony'], 'Databases & Storage': ['mysql'], 'Testing & QA': ['ava'], 'Dev Practices & Concepts': ['agile', 'scrum', 'devops'], 'Soft Skills': ['communication', 'leadership', 'collaboration', 'vision', 'innovation', 'respect', 'transparency']}"
+Solutions Consultant,Workato,"Remote in Denver, CO","remote in denver, co",2025-07-14,Indeed,"About Workato
+Workato transforms technology complexity into business opportunity. As the leader in enterprise orchestration, Workato helps businesses globally streamline operations by connecting data, processes, applications, and experiences. Its AI-powered platform enables teams to navigate complex workflows in real-time, driving efficiency and agility.
+Trusted by a community of 400,000 global customers, Workato empowers organizations of every size to unlock new value and lead in today's fast-changing world. Learn how Workato helps businesses of all sizes achieve more at workato.com.
+Why join us?
+Ultimately, Workato believes in fostering a flexible, trust-oriented culture that empowers everyone to take full ownership of their roles. We are driven by innovation and looking for team players who want to actively build our company.
+But, we also believe in balancing productivity with self-care. That's why we offer all of our employees a vibrant and dynamic work environment along with a multitude of benefits they can enjoy inside and outside of their work lives.
+If this sounds right up your alley, please submit an application. We look forward to getting to know you!
+Also, feel free to check out why:
+Business Insider named us an ""enterprise startup to bet your career on""
+Forbes' Cloud 100 recognized us as one of the top 100 private cloud companies in the world
+Deloitte Tech Fast 500 ranked us as the 17th fastest growing tech company in the Bay Area, and 96th in North America
+Quartz ranked us the #1 best company for remote workers
+Responsibilities
+We are looking for an exceptional Solutions Consultant (Presales) to join our Embedded Platform Team to support our US region. This role will report to our Director of Solutions Consulting (Embedded) and will play an integral role in working as the key advisor and advocate for Workato's Embedded Platform to help prospective customers achieve their business outcomes. As a Solutions Consultant (Presales), you will actively drive and manage the solutioning and evaluation phases of the sales process and will be an integral member of the account teams. In order to be successful in this role, you must understand and be able to articulate technical concepts as well as communicate the value of Workato's products to business and technical prospects. You will also help shape the product and direction of the company by communicating market needs to the Product Management team. We are looking for a top performer who can establish & maintain strong relationships throughout the sales cycle, and who exudes a passion for understanding the needs of the customer and articulating the value of Workato's products and solutions in meeting those needs. You will also be responsible to:
+Being our customer's most trusted advisor by realizing Workato's value propositions and platform capabilities to achieve their business objectives.
+Owning and leading the technical diagnosis, prescription, and validation phases of the sales cycle and providing a consultative approach in advising customers.
+Establishing partnerships with Account Executives, Solution Architects, and other functions of the Embedded Platform Team to evangelize our platform, approach, and architecture tailored to the customer's business and drive the technical sales stages to completion.
+Articulating and educating prospects on various business, technical, and architectural concepts to a variety of audiences. Primary stakeholders include product managers, developers, architects, customer success, professional services as well as executive leadership.
+Sell the value of the Workato platform using multiple formats/channels, including in-person and remote online product demonstrations.
+Create and deliver custom product demonstrations to support the sales cycle. This may include solving for unique customer UI/UX journeys through the use of the Embedded Platform iFrames and APIs.
+Perform business and technical discovery with customer prospects and be able to architect/build proposed solutions using the Workato platform.
+Successfully manage and execute technical workshops and in-depth proof of concepts (POCs), on-site or remotely.
+Work with new customers to achieve First Value on the platform.
+Fully own responses to functional and technical elements of RFIs/RFPs.
+Collect feedback from the field, synthesize, analyze and channel to Product Management and Engineering for product roadmap enhancements.
+Responsible for representing the Workato platform to customers at field events such as conferences, seminars, etc.
+Support Marketing and Event functions by evangelizing the Workato solution which includes writing blogs, participating in demo-driven webinars, and speaking at industry and partner events.
+Requirements
+Qualifications / Experience / Technical Skills
+BA/BS or equivalent education - Computer Science degree is a plus.
+3-5 years of pre-sales experience in a SaaS organization required.
+Hands-on experience with iPaaS technologies is a must-have.
+Demonstrable experience working with Enterprise customers and complex sales cycles.
+Hands-on experience with automation technologies, middleware, integration architecture patterns, web services technologies, enterprise messaging patterns, APIs, SOA, ESB, BPM, SDKs, and Databases.
+Hands-on experience with cloud technologies - iPaaS, SaaS applications, cloud infrastructure (AWS, GCP, Azure)
+Familiarity with object-oriented programming and scripting
+Understanding of web technologies such as JSON, XML, HTTP, GraphQL
+Knowledge of front-end development, including but not limited to HTML (particularly iframes & iframe security mechanisms), JWT, Javascript, and/or CSS.
+Familiarity with AI Concepts such as prompt engineering, RAG, vector databases, chain of thought reasoning, and other techniques used to improve results and performance of Gen-AI use cases
+Soft Skills / Personal Characteristics
+Passionate about ensuring customer success.
+Adaptable and positive; eager to learn new concepts and technologies, and solve problems.
+Excellent interpersonal and presentation skills; able to clearly convey complex ideas to diverse audiences and collaborate effectively.
+Strong leadership abilities; comfortable leading architectural discussions and presenting to technical and business audiences at all levels.
+Results-oriented and self-motivated
+(REQ ID: 2163)",N/A,https://www.indeed.com/rc/clk?jk=4481b6013f2ad8c1&bb=qT6LoydPEKStUEGOafj5h6r3Adqqg0xryVoJkEEvNJrwiQYUfOGDNoDwomvBbemb4xHtwoJZnE-RM9DmSVFWKyf0VuThN-kIOGCZk7exJXSx87f--9XA1s5CnXTEnxpFuhql1ZbjTROy7shdEDko5w%3D%3D&xkcb=SoB467M3vFxo9zS8SR0MbzkdCdPP&fccid=0cc13dbc480d68ee&vjs=3,False,front-end developer,"['ai', 'aws', 'azure', 'css', 'gcp', 'graphql', 'html', 'innovation', 'json', 'leadership', 'organization', 'presentation skills', 'productivity', 'security', 'xml']","{'Languages & Scripting': ['javascript', 'html', 'css', 'java', 'graphql', 'xml', 'json', 'r'], 'Frontend Frameworks & Libraries': ['lit'], 'Backend & API': ['soa'], 'Cloud & Infrastructure': ['aws', 'azure', 'gcp'], 'Security & Identity': ['jwt'], 'Testing & QA': ['chai', 'ava'], 'Dev Practices & Concepts': ['object-oriented programming'], 'Soft Skills': ['leadership', 'organization', 'presentation skills', 'innovation']}"
+WordPress Developer,Inncompass LLC,Remote,remote,2025-07-14,Indeed,"WordPress Developer (Contract Role)
+Country Herald is redesigning our entire platform to better serve local communities across the U.S. We’re seeking a highly skilled WordPress Developer to lead that transformation.
+This is a contract-to-hire opportunity for someone who’s passionate about building content-rich, high-performance sites that are mobile-first, SEO-optimized, and ready for AI integration. It's a 3-6 month role with the opportunity for ongoing support.
+What You’ll Do
+Rebuild the Country Herald site using a State > County > City content architecture
+Improve site performance, mobile responsiveness, and page speed
+Enhance design and UX while keeping it aligned with our “modern heritage” brand aesthetic
+Develop and maintain plugins, security protocols, and push notification systems
+Integrate third-party tools including AdSense, Taboola, and breaking news alerts
+Set up API workflows for automated story ingestion via ChatGPT
+Help scope and potentially build a mobile app with geo-targeted push notifications
+Who You Are
+You have 5+ years of experience with WordPress development (themes, plugins, PHP, JS, HTML/CSS)
+You have a strong eye for UX/UI, especially for content-heavy sites
+You know SEO inside and out—and how to build for it
+You thrive in mobile-first environments and understand performance optimization
+You can work independently, hit deadlines, and communicate well on Slack
+Bonus if you’ve worked with AI content tools or publishing APIs
+Details
+Contract-to-hire with competitive pay based on experience
+Remote or hybrid welcome
+Must be available for collaborative Slack-based communication
+You’ll report to the Chief Operating Officer and work directly on one of our highest-priority projects
+To Apply Please email the following to editorial@country.ink with the subject line “WordPress Developer – [Your Name]”:
+Your portfolio2–3 WordPress sites you’ve built or rebuilt (live preferred)
+GitHub or code samples (optional but encouraged)
+We are open to Company profiles as well!
+Job Type: Part-time
+Pay: $2,000.00 per month
+Benefits:
+Flexible schedule
+Schedule:
+Monday to Friday
+Weekends as needed
+Work Location: Remote
+Expected Start Date: 07/01/2025",N/A,https://www.indeed.com/rc/clk?jk=a67769054cbf7436&bb=qT6LoydPEKStUEGOafj5hwarAHlnArDgqSrEte9eapHRqvS5IRwZX_0cCHb-4m_qsv0YFw_iAxhZSv71uVgmNcB8rvSWvWwvUz8slhxpPkkF4me0HUB9ISm5ClzVAf-iY-CrmQtcCfIOi9KtqV2Npw%3D%3D&xkcb=SoCR67M3vFxo9zS8SR0DbzkdCdPP&fccid=3da86769816cdb32&cmp=Inncompass&ti=Wordpress+Developer&vjs=3,False,front-end developer,"['ai', 'communication', 'css', 'github', 'html', 'security', 'slack', 'wordpress']","{'Languages & Scripting': ['html', 'css', 'go', 'r'], 'Testing & QA': ['ava'], 'Data Science & AI': ['chatgpt'], 'Project & Tools': ['slack'], 'Soft Skills': ['communication']}"
+Senior Software Engineer (LAMP),Travelnet Solutions,Remote,remote,2025-07-14,Indeed,"Join TravelNet Solutions as a Senior Software Engineer!
+At TravelNet Solutions (TNS), we’re transforming the hospitality industry with innovative technology solutions.
+
+A Senior Software Engineer is responsible for finding solutions to complex technical problems and delivering those solutions using the appropriate combination of front-end, back-end, or full-stack technologies, including Angular. Your primary focus will be the development of server-side logic; definition and maintenance of the central database, and ensuring high performance and responsiveness to requests. You will take beautiful UI/UX designs and convert them into working HTML, CSS, and JavaScript, including Angular. The primary application stack is LAMP, which includes the latest version of PHP, MySQL, and Linux, with the addition of Angular for front-end development. You will also be responsible for integrating elements built by your co-workers, including Angular components, into the application.
+
+This role is perfect for someone who is:
+A self-starter with tremendous initiative and a strong work ethic.
+An excellent communicator and collaborator across functional teams.
+Eager to make a high impact at a product-driven company.
+Adaptable, quick to embrace change, and a fast learner.
+Skilled in creative and critical thinking.
+Detail-oriented, even in a fast-paced environment.
+Passionate about technology and innovation.
+
+About TravelNet Solutions:
+For over 21 years, TravelNet Solutions has provided integrated software and marketing solutions for the hospitality industry, anchored by our flagship Track Property Management System and other products under the Track banner.
+
+Our single-vendor ecosystem equips growing vacation rental companies with all the enterprise-class tools they need to scale. With ongoing investments in platform development, 70+ integration partners, and a growing list of native features, Track empowers hospitality professionals to achieve digital transformation and operational excellence.
+
+Our Core Values reflect the behaviors that shape the tone of how we work with each other, our partners, and our customers:
+
+Serve Others: Nurturing growth to help others succeed.
+Grit: Taking ownership and never giving up on what matters most.
+Create the Future: Innovating to disrupt the status quo.
+
+Why Join Us?
+Be part of a fast-moving, dynamic team focused on growth and success.
+Work alongside a talented, collaborative, and supportive team.
+Work for a portfolio company offering a one-vendor solution for SaaS technology, marketing, and distribution.
+Help reshape the hospitality industry through technology and service innovation.
+
+Perks and Benefits:
+Full medical, dental, and vision coverage
+Flexible Paid Time Off
+Unlimited access to professional training and development
+Health Savings Account with up to a $2,000 annual match
+Flexible work environment
+Free life insurance and long-term disability coverage
+Flexible Spending Accounts
+Retirement plan with employer match
+Free snacks and soda in the office
+$150 quarterly gift for personal use
+Competitive wages
+Work with an amazing team!
+
+Responsibilities:
+Build efficient, testable, and reusable PHP or JavaScript modules
+Identify solutions to complex problems
+Solve performance issues and architectural challenges
+Integration of data storage solutions like MySQL, PostgreSQL and MongoDB
+Ensure that the code that you produce passes the SonarCloud quality rules for each Pull Request
+Integration of user-facing elements developed by front-end developers, including Angular components
+Translate UI/UX designs and convert them into working HTML, CSS, and JavaScript, including Angular
+Analyze, configure, and tune the front-end web application, including Angular performance optimization
+Be a subject matter expert on web technologies, including Angular
+Enforce software development standards and mentor junior engineers in Angular development best practice
+
+Minimum Qualifications:
+5+ years of experience in web development, including Angular
+Bachelor's degree in Computer Science or an equivalent combination of education and experience
+Strong knowledge of PHP web frameworks (Zend Framework, Laravel, Symphony)
+Understanding of MVC design patterns
+Basic understanding of front-end technologies, such as JavaScript, HTML5, CSS3, and Angular
+Understanding accessibility and security compliance
+Understanding fundamental design principles behind a scalable application, including Angular architecture and scalability considerations
+User authentication and authorization between multiple systems, servers, and environments
+Integration of multiple data sources and databases into one system
+Creating database schemas that represent and support business processes
+Familiarity with SQL/NoSQL databases and their declarative query languages
+Proficient understanding of code versioning tools, such as Git, GitHub
+
+
+Diversity and Inclusion:
+We celebrate diversity of thought, culture, and background and are committed to creating an inclusive environment. All qualified applicants will receive consideration for employment without regard to race, color, religion, gender, sexual orientation, gender identity or expression, national origin, disability, or veteran status or any other protected status under applicable federal, state, or local law. We comply with all applicable laws governing nondiscrimination in every location where we operate and encourage individuals from all backgrounds to apply.
+
+Compensation:
+The typical starting salary range for this position is: $100,000-115,000
+The actual salary offer will consider multiple factors, including skills, experience, education, and location. Please note that the salary reflects the base amount only and does not include total compensation, such as discretionary bonuses and benefits.",N/A,https://www.indeed.com/rc/clk?jk=272211b991cd0860&bb=qT6LoydPEKStUEGOafj5h54FuNkDokh0stKsVjLqlrY4zEWuWSOMIeKVKUgZJTOCbo9lgjY9BuzYvwQaXmPbSjOEW1Ah2C6_33wusNYyC6ezX091aiMMJSRjz-ZjJhtBNeihBKV2pz_7KTGYZpXsaw%3D%3D&xkcb=SoAl67M3vFxo9zS8SR0CbzkdCdPP&fccid=0ea2c9e627b2bc8a&vjs=3,False,front-end developer,"['accessibility', 'angular', 'compliance', 'critical thinking', 'css', 'design patterns', 'git', 'github', 'html', 'innovation', 'laravel', 'linux', 'mongodb', 'mysql', 'postgresql', 'security', 'sql']","{'Languages & Scripting': ['javascript', 'sql', 'html', 'css', 'go', 'java', 'r', 'scala'], 'Frontend Frameworks & Libraries': ['angular', 'lit'], 'Backend & API': ['laravel'], 'Databases & Storage': ['postgresql', 'mysql', 'mongodb'], 'Cloud & Infrastructure': ['aws'], 'Testing & QA': ['ava', 'pact'], 'Operating Systems': ['linux'], 'Dev Practices & Concepts': ['design patterns'], 'Soft Skills': ['critical thinking', 'initiative', 'work ethic', 'vision', 'innovation']}"
+Front End Developer,Track 25 LLC,Remote,remote,2025-07-14,Indeed,"We're seeking a senior/experienced Front End ReactJS Developer to join a high-performing team building next-generation television experiences. You’ll work on apps used by millions — primarily built with ReactJS and Brightscript for Roku and other streaming platforms. TV App experience is highly desired.
+If you love solving complex UI problems, integrating APIs, and optimizing for large screens and living room devices, this is your kind of project.
+Responsibilities:
+Develop high-quality TV app interfaces using ReactJS, following design specifications closely
+Integrate RESTful APIs and manage data in modern JavaScript workflows
+Collaborate with designers and backend engineers to deliver seamless OTT (over-the-top) streaming experiences
+Contribute to Brightscript development for Roku apps, and assist in maintaining or enhancing existing codebases
+Troubleshoot, debug, and optimize apps for performance across TV platforms
+Required Qualifications:
+7+ years of recent experience with ReactJS in production environments
+Strong experience consuming APIs from ReactJS apps and managing state (e.g., Redux, Context API)
+Current experience developing user interfaces to design specifications is a must
+Proficiency with JavaScript (ES6+)
+Ability to translate Figma/Sketch designs into pixel-perfect UI
+Clear understanding of responsive and adaptive design, especially for TV devices
+Preferred Qualifications:
+Background in mobile app development (React Native or native iOS/Android)
+Experience with Roku's Brightscript and Roku SceneGraph development
+Familiarity with TV app SDKs (Fire TV, Android TV, Apple TV)
+Experience in publishing or certifying apps on Roku or other OTT platforms
+Contract Details:
+100% Remote
+Contract length: 6–12 months, with potential for extension
+Flexible working hours, but availability for some overlap with U.S. time zones preferred
+Why This Role?
+Join a fast-moving team focused on building streaming experiences for millions of viewers
+Work with modern frameworks and cutting-edge technologies
+Help shape the future of how people engage with digital entertainment
+If you are passionate about application development and eager to contribute to exciting projects, we encourage you to apply. Join us in creating innovative solutions that make a difference!
+Job Types: Full-time, Contract
+Pay: $65.00 - $95.00 per hour
+Expected hours: 40 per week
+Benefits:
+401(k)
+Dental insurance
+Health insurance
+Vision insurance
+Schedule:
+8 hour shift
+Monday to Friday
+Work Location: Remote",N/A,https://www.indeed.com/rc/clk?jk=f24d5a4d3fc85215&bb=qT6LoydPEKStUEGOafj5h3qn4UYvk35qbfL63jFzCzLnnoGRUcVPPKrOOYRstSPZW8CzIMPkFVnxKdA6meflUNPT7MOZDC8GAUaCsX3fVNiLs9z6QbZ8sFJHbdqr1OrDuNi_EBaEli_MMTPwRJpePQ%3D%3D&xkcb=SoC467M3vFxo9zS8SR0BbzkdCdPP&fccid=842862ea86d0cb2e&cmp=Track-25-LLC&ti=Front+End+Developer&vjs=3,False,front-end developer,"['figma', 'react', 'react native', 'sketch']","{'Languages & Scripting': ['javascript', 'java', 'r'], 'Frontend Frameworks & Libraries': ['react', 'react native', 'redux', 'lit'], 'Mobile Development': ['android', 'ios'], 'Backend & API': ['rest'], 'Testing & QA': ['ava'], 'Project & Tools': ['figma'], 'Soft Skills': ['vision']}"
+Senior ColdFusion Engineer (Remote),ECP,"Remote in Milwaukee, WI","remote in milwaukee, wi",2025-07-14,Indeed,"Note - this is a remote position. We are open to remote candidates located in the US.
+ECP is growing quickly and is looking for experienced engineers looking to join an amazing team and write great code to help make life better at senior living communities around the world.
+ECP is a market-leading SaaS solution that enables senior living communities to better care for their residents. ECP is used in over 7,000 communities around the world. We're looking to further expand by increasing the number of customers that use our software and increasing the scope of how we serve our customers by developing and releasing new products.
+As a talented and experienced developer, you will jump right in and play a lead role as we build new applications, enhance and expand our product, improve our processes, and continuously tune and modernize our tech stack. You will join a talented and committed team, and you will have constant opportunities to learn about our business, work with state-of-the-art tools and technology, and build solutions that fuel our growth.
+
+Responsibilities:
+Develop applications using Adobe ColdFusion and Lucee
+Be exposed to, work with and learn other technologies including ReactJS, NodeJS, and PostgreSQL
+Contribute to code base hosted on AWS
+Stay intellectually curious and up to date on technical best practices
+Design and architect new applications using cutting edge technology
+Work collaboratively in a team. Perform as a productive teammate with your fellow developers and others involved in the development process. Communicate frequently and openly, help those around you to deliver more effectively, and embrace team standards for communication, code management, and development process.
+Develop an understanding of our overall product and platform. Understand how the work you contribute will fit into our overall development pipeline, and how the functionality you build will benefit our customers, their constituents, and our company
+Requirements
+Bachelor’s Degree in Computer Science or related field
+5+ years software development experience
+Ability to troubleshoot and solve technical problems autonomously
+Proficiency with full-stack front-end and back-end frameworks and languages
+5+ years of experience with Adobe ColdFusion or Lucee
+4+ years of strong back-end experience with hand-coded SQL (MSSQL, PostgreSQL)
+4+ years of strong front-end experience with front-end development using JavaScript (ES6+) and jQuery
+3+ years of experience designing and architecting scalable applications
+Experience developing modern front-end UI using JavaScript frameworks such as React, Angular or Vue
+Passion and excitement for writing great code that actually helps people
+Experience developing in accordance with common applicable design patterns and object-oriented development
+Experience working in an agile development process
+Fluent English with strong grammatical skills
+Legally authorized to work in the United States without sponsorship",N/A,https://www.indeed.com/rc/clk?jk=3f925ee62219cc40&bb=qT6LoydPEKStUEGOafj5h9JZVO-gbw8KfBofDG6KMiio9AxiP59cA92sOg0Z3O06VuXAgf40ghfgrAxmqBxr6xNxJQTrJQKTT_IcPzPJPkegdwEWTKItd7RgVHlHtWvHBb4lG2u7mhFwRILbVBx-Ng%3D%3D&xkcb=SoAM67M3vFxo9zS8SR0AbzkdCdPP&fccid=330082fa758fde6f&vjs=3,False,front-end developer,"['agile', 'angular', 'aws', 'communication', 'design patterns', 'postgresql', 'react', 'sql']","{'Languages & Scripting': ['javascript', 'sql', 'java', 'r', 'scala'], 'Frontend Frameworks & Libraries': ['react', 'angular', 'jquery', 'lit'], 'Mobile Development': ['expo'], 'Databases & Storage': ['postgresql'], 'Cloud & Infrastructure': ['aws'], 'Testing & QA': ['ava'], 'Dev Practices & Concepts': ['agile', 'design patterns'], 'Soft Skills': ['communication']}"
+Senior Software Engineer,Rev,Hybrid work,hybrid work,2025-07-14,Indeed,"There’s never been a more exciting time to be part of Rev.
+
+Every role here plays a critical part in shaping the future of speech technology and empowering our customers to do more, faster. We didn’t disrupt the industry by playing it safe. We did it by embracing bold thinking, welcoming diverse perspectives, and giving our team the freedom and responsibility to innovate. At Rev, you won’t just have a seat at the table — you’ll help redesign it.
+
+Come build what’s next with us
+
+
+Senior Software Engineer
+How this role will Serve, Own and Grow at Rev:
+At Rev, we're on a mission to understand the human voice. We're seeking a Senior Software Engineer to join our dynamic team and contribute to the development of our SaaS platform. This role is ideal for someone who thrives in a fast-paced environment and is passionate about building scalable, high-performing software solutions using a variety of technologies and frameworks.
+As a senior full stack engineer, you'll play a pivotal role in designing, developing, and maintaining applications that are integral to our SaaS platform. You'll work closely with cross-functional teams to deliver features that enhance user experience and drive business growth. Your expertise will help shape the future of our products and the remote labor industry at large.
+Responsibilities:
+Full Stack Development: Design, develop, and maintain scalable, high-availability applications using a mix of front-end and back-end technologies
+API and Data Streaming: Architect solutions that leverage GraphQL for API development
+Backend Services: Develop robust backend services using ASP.NET
+Frontend Development: Build intuitive user interfaces with React; a deep understanding of JavaScript/TypeScript is a major bonus
+Database Management: Manage databases and data storage solutions, including Microsoft SQL and various non-relational databases
+Cross-Functional Collaboration: Work closely with product managers, UX designers, and other stakeholders to define and achieve software development objectives
+Mentorship and Code Quality: Mentor junior developers, review code, and ensure adherence to best practices in coding and documentation
+Third-Party Integration: Lead the integration of third-party services and APIs, ensuring system robustness and performance
+Continuous Learning: Stay updated with emerging technologies and frameworks, incorporating them into the development process as applicable
+Qualifications:
+Educational Background: Bachelor’s or Master’s degree in Computer Science, Information Technology, or a related field
+Professional Experience: 7+ years of experience in full-stack development, with a proven track record of successful project delivery
+Technical Proficiency:
+Proficiency in building applications using GraphQL, ASP.NET, and React
+Strong understanding of software architecture, design patterns, and best practices
+Experience with system design and scalability, particularly in building high-volume, low-latency applications
+Strong problem-solving skills and ability to work both independently and in collaborative settings
+Excellent verbal and written communication skills
+Nice to have knowledge of:
+Cloud Services: Experience with AWS cloud services for deploying and managing applications
+Mobile Development: Hands-on experience with mobile development using React Native
+Containerization and Orchestration: Proficiency in containerization and orchestration technologies like Docker and Kubernetes
+Database Knowledge: Knowledge of non-relational databases and their use cases
+#LI-Remote, #LI-Hybrid
+
+Location Requirement:
+If you're based in Austin, TX, this is a hybrid role with an expectation of being onsite 1–2 days per week at our office located at: 1717 W 6th St, Suite 310, Austin, TX 78703.
+If you're not based in Austin, this is a fully remote position.
+Ready to drive real impact for our customers while helping shape the future of Rev?
+Apply now — we’d love to meet you!",N/A,https://www.indeed.com/rc/clk?jk=5e7c177ff219280b&bb=qT6LoydPEKStUEGOafj5hysyEwcoFdN0v9IikkxSsyc3nTswr8S3x-KGei2H1J65CR5A473IbzQEnIXiHUdpCQOnPsWl7Ml1nqN26nkK7Za7auGLs-lQ5GuejFzhBpKtVxNPRDSlQX1v7iEXZNEBIg%3D%3D&xkcb=SoCC67M3vFxo9zS8SR0HbzkdCdPP&fccid=f384a0f9dae2d5a1&vjs=3,False,front-end developer,"['asp.net', 'aws', 'collaboration', 'communication', 'containerization', 'cross-functional teams', 'database management', 'design patterns', 'docker', 'documentation', 'frontend', 'full-stack development', 'graphql', 'kubernetes', 'mobile development', 'react', 'react native', 'sql', 'typescript', 'user experience']","{'Languages & Scripting': ['javascript', 'typescript', 'sql', 'java', 'graphql', 'r', 'scala'], 'Frontend Frameworks & Libraries': ['react', 'react native', 'lit'], 'Cloud & Infrastructure': ['aws', 'kubernetes', 'docker'], 'Testing & QA': ['ava', 'pact'], 'Dev Practices & Concepts': ['design patterns'], 'Soft Skills': ['communication', 'collaboration', 'mentorship']}"
+Data & Web Developer,Protect Life Michigan,"Remote in Lansing, MI 48933","remote in lansing, mi 48933",2025-07-14,Indeed,"About Protect Life Michigan
+Thousands of lives are on the line every day due to abortion. Are you ready to stand up and change hearts to stop it? We are defenders on a mission to recruit, equip, and deploy students around Michigan to become passionate and professional social reformers. We won’t stop until abortion is unthinkable. Since 2005, we have grown from a group of volunteers to a team of dozens of powerhouse activists. Each team member is bright, strategic, and dedicated to protecting the unborn.
+
+Join our team to help us recruit even more talent, expand our mission to make abortion unthinkable, and give people an awesome transition into joining our strategic organization.
+
+Job Purpose:
+Protect Life Michigan’s Data & Web Developer will build and maintain the technical backbone of our fast-growing persuasion and outreach programs. This role is ideal for someone who loves solving problems with technology, is comfortable connecting complex systems, and wants their work to directly contribute to saving lives and changing culture.
+
+You will manage and enhance our suite of tools on Bubble.io, build automations, analyze public opinion polling, and help design and implement innovative software and data solutions to power our campaigns. You do not need prior Bubble or Python experience—if you are tech-savvy, hungry to learn, and excited to build great tools for a great cause, we can train you on specific platforms.
+This is a key strategic role on our team, ideal for a driven and mission-minded developer or technologist.
+
+Location: Remote but must reside in (or be willing to relocate to) Michigan, with the capacity to travel for work on occasion
+
+Duties & Responsibilities:
+Develop and maintain internal tools using Bubble.io and similar no-code/low-code platforms
+Manage organizational databases, CRMs, and voter files, ensuring clean and accurate data
+Connect and automate systems (ex: linking voter files, CRM, polling platforms, outreach apps) to support data-driven outreach and campaigns
+Design and analyze surveys and polling through tools such as Civitas Public Research
+Build new software tools to help manage and visualize data, track outreach progress, and optimize our persuasion efforts
+Review and interpret poll results, providing clear reports and actionable insights to leadership
+Support website management and improvements for PLM’s public sites and campaign microsites
+Collaborate with leadership and campaign staff to brainstorm and implement new data-driven strategies
+Support training staff and volunteers on using new tools or data systems
+Other duties as needed to support the team’s mission and technical needs
+
+Qualifications:
+Commitment to the pro-life movement and the mission of Protect Life Michigan
+Strong experience with data management, spreadsheets, and database systems
+Familiarity with web development (no-code/low-code platforms such as Bubble.io preferred, but not required)
+Experience (or strong interest) in connecting systems via APIs, building automations, and integrating CRMs
+Analytical mindset; comfort with survey design, polling analysis, and data reporting
+Organized, independent worker with strong attention to detail
+Excellent problem-solving skills; able to learn new technologies quickly and adapt to changing needs
+Ability to manage multiple projects simultaneously and meet deadlines
+Positive attitude and strong communication skills, both written and verbal
+(Preferred) Familiarity with Python, SQL, JavaScript, or related technologies
+(Preferred) Familiarity with political data tools, voter files, or campaign technology
+Salary/Benefits:
+After completing 1 year of work, eligibility for employer-matched Simple IRA.
+Ample professional development opportunities.
+Protect Life Michigan is a support-raising organization. The salary and all expenses associated with this position will be fundraised by the candidate. Protect Life Michigan will provide training and coaching in order to help the candidate reach full support and will pay the candidate while they raise support. We have an excellent track record of helping job candidates reach full support: 85% of our candidates have reached full support within 2-3 months.
+All applicants must be supportive of this approach and open to engaging in it.
+Ample paid vacation time, holidays, and sick days.
+Semi-flexible schedule to be set with the employee and supervisor
+Ability to work from home.
+Salary: $25-$32 per hour, commensurate with experience
+
+Why this role matters:
+We are pioneering the most data-driven, scalable persuasion movement in the pro-life space. As our Data & Web Developer, your work will directly empower activists, optimize campaigns, and change hearts and minds across Michigan. You’ll help ensure that no opportunity to save lives is missed because of broken systems or lost data.
+If you’re ready to put your tech skills to work for the most important human rights cause of our time, we want to hear from you.",N/A,https://www.indeed.com/rc/clk?jk=5ca10e0f8068d3fa&bb=qT6LoydPEKStUEGOafj5h8lFIdP19ZsemgQ2HFgCckL0Jlr3V1a_KtX98iOIm0A42d2wv0Fqlc4cL7wFFdgMJ03zSxYZEFKWi08GIizyPa_mVDZx8wIwXPaDqKcsgmadG0MBW37RIxftUQQvXFQVYw%3D%3D&xkcb=SoA267M3vFxo9zS8SR0GbzkdCdPP&fccid=5eea25c2a12ca950&vjs=3,False,front-end developer,"['attention to detail', 'communication', 'leadership', 'organization', 'python', 'sql']","{'Languages & Scripting': ['python', 'javascript', 'sql', 'java', 'r', 'scala'], 'Frontend Frameworks & Libraries': ['lit'], 'Backend & API': ['rest'], 'Security & Identity': ['sso'], 'Testing & QA': ['ava'], 'Soft Skills': ['communication', 'leadership', 'attention to detail', 'persuasion', 'positive attitude', 'organization']}"
+Full Stack Developer,Core4ce,Remote,remote,2025-07-14,Indeed,"Information Technology -> Software Development/Engineering
+Remote
+•
+ID: 862-383
+•
+Full-Time/Regular
+
+
+We are seeking a motivated Full Stack Developer to support the U.S. Navy’s EMPARTS (Enhanced Medical Preparedness Assessment & Readiness Tracking System) application. The developer will assist in enhancing and maintaining EMPARTS, a mission-critical medical readiness system used across Navy Medicine. This position involves both front-end and back-end development.
+
+Key Responsibilities:
+Develop and maintain responsive, user-friendly web interfaces using modern JavaScript frameworks (e.g., Angular, React, or Vue)
+Implement and optimize backend services and APIs using .NET Core, Java, or Node.js
+Support the integration of EMPARTS with Navy medical systems and databases (e.g., Navy TWMS, DEERS, EHR interfaces)
+Assist in maintaining and optimizing Microsoft SQL Server or Oracle-based data structures and stored procedures
+Participate in Agile development sprints and Scrum ceremonies
+Troubleshoot application issues, conduct unit testing, and assist with security and compliance reviews (RMF, STIGs)
+Collaborate with cybersecurity, system administrators, and functional SMEs to ensure operational readiness of EMPARTS
+Prepare technical documentation and participate in peer code reviews
+
+Required Qualifications:
+Bachelor’s degree in Computer Science, Software Engineering, Information Systems, or related field (or equivalent experience)
+1–3 years of experience in full stack development with hands-on coding in both front-end and back-end
+Proficiency in HTML, CSS, JavaScript, and at least one modern JavaScript framework (Angular, React, or Vue)
+Familiarity with backend programming in C#, Java, or Node.js
+Experience working with SQL databases and writing basic queries and stored procedures
+Understanding of RESTful API development and integration
+U.S. Citizen with ability to obtain and maintain a DoD Secret clearance
+
+Preferred Qualifications:
+Experience working with DoD or government medical readiness applications
+Familiarity with the EMPARTS system, HL7 interfaces, or other Navy Medicine tools
+Exposure to secure software development practices and RMF/DIACAP
+Experience with DevSecOps tools (GitLab, Jenkins, Docker, etc.)
+Knowledge of Agile/Scrum methodologies
+Familiar with Ai Technologies and tools used in Software development
+
+All qualified applicants will receive consideration for employment without regard to race, color, religion, sex (including pregnancy), national origin, disability, veteran status, age, genetic information, or other legally protected status.",N/A,https://www.indeed.com/rc/clk?jk=9fba4b3e478cdb8e&bb=qT6LoydPEKStUEGOafj5hzr8OgQXjwtda6SMqOxLDDqpWZHNdHOuhefVfD3krG1DJXRT6WguxTGZ7RhbiUnSm8fkriUwTrYS2l16rPcNyOE7UVRScB4LHApDevud-rdPaY6tYJVGrvmqDo_G1zk2jg%3D%3D&xkcb=SoCr67M3vFxo9zS8SR0FbzkdCdPP&fccid=fce41f6d7b015073&vjs=3,False,front-end developer,"['agile', 'ai', 'angular', 'compliance', 'css', 'cybersecurity', 'docker', 'documentation', 'gitlab', 'html', 'jenkins', 'node.js', 'oracle', 'react', 'scrum', 'security', 'sql', 'testing', 'unit testing']","{'Languages & Scripting': ['javascript', 'sql', 'html', 'css', 'go', 'java', 'r'], 'Frontend Frameworks & Libraries': ['react', 'angular', 'lit'], 'Mobile Development': ['expo'], 'Backend & API': ['node.js', 'rest'], 'Databases & Storage': ['oracle'], 'Cloud & Infrastructure': ['docker'], 'DevOps & CI/CD': ['jenkins'], 'Testing & QA': ['unit testing', 'ava'], 'Dev Practices & Concepts': ['agile', 'scrum', 'technical documentation']}"
