@@ -21,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} flex`}>
+       <ThemeProvider>
         <AppShell initialUser={null}>
           {children}
         </AppShell>
+       </ThemeProvider>
       </body>
     </html>
   );
