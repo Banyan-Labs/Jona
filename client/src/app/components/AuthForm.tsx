@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/app/lib/supabaseClient";
-import { signInWithGoogle } from "@/app/api/auth/auth";
+import { signInWithGoogle } from "@/app/api/auth/auth"
 import { Shield } from "lucide-react";
 interface AuthUser {
   id: string;
