@@ -10,19 +10,16 @@ from app.utils.skills_engine import (
     extract_skills,
     extract_skills_by_category
 )
-from app.scraper.tek_systems import scrape_teksystems
-from app.scraper.indeed_scraper import scrape_indeed
-from app.scraper.indeed_crawler import crawl_indeed
-from app.scraper.dice_scraper import scrape_dice
-from app.scraper.career_crawler import crawl_career_builder 
-from app.scraper.zip_crawler import scrape_zip_and_insert
+from app.scrapers.tek_systems import scrape_teksystems
+from app.scrapers.indeed_crawler import crawl_indeed
+from app.scrapers.dice_scrapers import scrape_dice
+from app.scrapers.career_crawler import crawl_career_builder 
 from app.db.connect_database import supabase
 from app.db.cleanup import cleanup
 from app.utils.scan_for_duplicates import scan_for_duplicates
 from app.utils.write_jobs import write_jobs_csv
 from app.db.sync_jobs import sync_job_data_folder_to_supabase
 from app.config.config_utils import get_output_folder
-from app.scraper.career_scraper import scrape_career_builder
 router = APIRouter()
 # Initialize FastAPI app
 app = FastAPI()
@@ -30,30 +27,21 @@ router = APIRouter()
 SKILLS = load_all_skills()
 @app.get("/indeed", summary="Scrape and crawl Indeed")
 def run_indeed(location: str = Query("remote"), days: int = Query(15), debug: bool = Query(False)) -> Dict:
-    indeed_scraper = scrape_indeed(location, days)
     indeed_crawler = crawl_indeed(location, days)
-    folder = get_output_folder()
-    write_jobs_csv(indeed_scraper, scraper="indeed_scraper")
+    folder = get_output_folder()   
     write_jobs_csv(indeed_crawler, scraper="indeed_crawler")
 
     return {
-        "indeed_scraper": len(indeed_scraper),
         "indeed_crawler": len(indeed_crawler),
-
         "status": "indeed complete"
     }
 @app.get("/careerbuilder", summary="Scrape and crawl CareerBuilder")
-def run_careerbuilder(location: str = Query("remote"), days: int = Query(15), debug: bool = Query(False)) -> Dict:
-    career_builder = scrape_career_builder(location)
+def run_careerbuilder(location: str = Query("remote"), days: int = Query(15), debug: bool = Query(False)) -> Dict:    
     career_builder_crawler = crawl_career_builder(location)
-
-    write_jobs_csv(career_builder, scraper="career_builder_scraper")
     write_jobs_csv(career_builder_crawler, scraper="career_builder_crawler")
 
-    return {
-        "career_builder_scraper": len(career_builder),
+    return {      
         "career_builder_crawler": len(career_builder_crawler),
-
         "status": "careerbuilder complete"
     }
 @app.get("/dice", summary="Scrape Dice")
@@ -100,10 +88,8 @@ def run_all(
     if secret != os.getenv("SCRAPER_SECRET_TOKEN"):
         raise HTTPException(status_code=401, detail="Unauthorized: Invalid token")
 
-    # Scrape and crawl
-    indeed_scraper = scrape_indeed(location, days)
-    indeed_crawler = crawl_indeed(location, days)
-    career_builder_scraper = scrape_career_builder(location)
+    # Scrape and crawl   
+    indeed_crawler = crawl_indeed(location, days)    
     career_builder_crawler = crawl_career_builder(location)
     dice_scraper = scrape_dice(location, days)
     zip_jobs = scrape_zip_and_insert(location, days)
