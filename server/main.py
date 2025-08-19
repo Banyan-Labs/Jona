@@ -12,12 +12,12 @@ from app.utils.skills_engine import (
     extract_skills_by_category
 )
 # from sentence_transformers import SentenceTransformer
-from app.scraper.tek_systems import scrape_teksystems
-# from app.scraper.indeed_scraper import scrape_indeed
-from app.scraper.indeed_crawler import crawl_indeed
-from app.scraper.dice_scraper import scrape_dice
-from app.scraper.career_crawler import crawl_career_builder 
-from app.scraper.zip_crawler import scrape_zip_and_insert
+from app.scrapers.tek_systems import scrape_teksystems
+# from app.scrapers.indeed_scrapers import scrape_indeed
+from app.scrapers.indeed_crawler import crawl_indeed
+from app.scrapers.dice_scraper import scrape_dice
+from app.scrapers.career_crawler import crawl_career_builder 
+from app.scrapers.zip_crawler import scrape_zip_and_insert
 from app.db.connect_database import supabase
 from app.db.cleanup import cleanup
 from app.utils.scan_for_duplicates import scan_for_duplicates
@@ -563,12 +563,12 @@ from app.utils.skills_engine import (
     extract_skills_by_category
 )
 from sentence_transformers import SentenceTransformer
-from app.scraper.tek_systems import scrape_teksystems
+from app.scrapers.tek_systems import scrape_teksystems
 
-from app.scraper.indeed_crawler import crawl_indeed
-from app.scraper.dice_scraper import scrape_dice
-from app.scraper.career_crawler import crawl_career_builder 
-from app.scraper.zip_crawler import scrape_zip_and_insert
+from app.scrapers.indeed_crawler import crawl_indeed
+from app.scrapers.dice_scraper import scrape_dice
+from app.scrapers.career_crawler import crawl_career_builder 
+from app.scrapers.zip_crawler import scrape_zip_and_insert
 from app.db.connect_database import supabase
 
 

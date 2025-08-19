@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from app.db.connect_database import get_db_connection
 from app.utils.skills_engine import load_all_skills, extract_flat_skills,extract_skills
-from app.scraper.selenium_browser import get_headless_browser
+from app.scrapers.selenium_browser import get_headless_browser
 from dotenv import load_dotenv
 load_dotenv()
 SKILLS = load_all_skills()

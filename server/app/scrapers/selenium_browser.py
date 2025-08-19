@@ -7,7 +7,7 @@ import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from app.utils.common import configure_driver
+# from app.scrapers.selenium_browser import configure_webdriver
 import os
 
 def get_headless_browser():
@@ -27,6 +27,7 @@ def get_headless_browser():
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     return driver
+
 def configure_webdriver():
     options = uc.ChromeOptions()
     options.add_argument("--no-sandbox")

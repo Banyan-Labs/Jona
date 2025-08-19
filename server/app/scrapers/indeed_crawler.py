@@ -1,7 +1,6 @@
-from app.scraper.indeed_scraper import TECH_KEYWORDS
 import sys, os, time, csv, json, traceback, random
 from datetime import datetime, timedelta
-from app.scraper.selenium_browser import configure_webdriver
+from app.scrapers.selenium_browser import configure_webdriver
 from app.db.sync_jobs import sync_job_data_folder_to_supabase, insert_job_to_db
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
