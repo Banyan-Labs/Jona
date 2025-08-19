@@ -1,7 +1,7 @@
 import re
 import json
 from typing import Optional, List, Dict
-from app.services.supabase_client import supabase
+from app.supabase.supabase_client import supabase
 import os
 
 def load_flat_skills(filepath: Optional[str] = None) -> List[str]:

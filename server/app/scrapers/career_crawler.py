@@ -7,7 +7,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import InvalidSessionIdException, WebDriverException
-from app.utils.common import TECH_KEYWORDS, LOCATION, PAGES_PER_KEYWORD, MAX_DAYS, configure_driver
+from app.utils.common import TECH_KEYWORDS, LOCATION, PAGES_PER_KEYWORD, MAX_DAYS
 from app.db.sync_jobs import insert_job_to_db
 from app.db.cleanup import cleanup
 from app.utils.write_jobs import write_jobs_csv
@@ -16,7 +16,7 @@ from app.utils.skills_engine import (
     extract_flat_skills,
     extract_skills_by_category
 )
-
+from app.scrapers.selenium_browser import configure_webdriver
 SKILLS = load_all_skills()
 
 def is_driver_alive(driver):

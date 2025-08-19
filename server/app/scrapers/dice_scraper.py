@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from app.db.connect_database import get_db_connection
-from app.scraper.selenium_browser import get_headless_browser
+from app.scrapers.selenium_browser import get_headless_browser
 from app.utils.write_jobs import write_jobs_csv
 from dotenv import load_dotenv
 from app.utils.skills_engine import (
