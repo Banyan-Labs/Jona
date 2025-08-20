@@ -9,10 +9,11 @@ import type {
   StripeCheckoutSession,
 } from "@/types/application";
 import type { AdminSubscriptionData } from "@/types/admin_application";
-
-
+import { AdminService } from "./admin-jobs";
+import {AdminUser} from '../types/admin_application'
 
 export class SubscriptionService {
+  
   // Get all subscription plans
   static async getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
     const { data, error } = await supabase
@@ -448,7 +449,44 @@ static async getEnhancedUserProfile(
       usage,
     };
   }
+  static async performScraping(
+  jobId: string,
+  user: AdminUser
+): Promise<any[]> {
+  const response = await fetch("/api/scrape", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      jobId,
+      userId: user.id,
+    }),
+  });
+
+  if (!response.ok) {
+    console.error("Scraping failed with status:", response.status);
+    throw new Error("Scraping failed");
+  }
+
+  const jobs = await response.json();
+
+  if (!Array.isArray(jobs)) {
+    console.warn("Unexpected response format:", jobs);
+    throw new Error("Invalid job data received");
+  }
+
+  return jobs;
 }
+
+
+}
+async function getUserUsage(userId: string) {
+  return await SubscriptionService.getUserUsage(userId);
+}
+
+
+
 export async function updateUserProfile(
   userId: string,
   updates: Partial<EnhancedUserProfile>

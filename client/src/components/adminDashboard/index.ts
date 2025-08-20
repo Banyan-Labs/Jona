@@ -1,4 +1,4 @@
-// // Option 1: Use absolute paths that match your actual file structure
+// // // Option 1: Use absolute paths that match your actual file structure
 import JobManagement from "@/components/AdminDashboard/JobsManagement";
 import UserManagement from "@/components/AdminDashboard/UserManagement"; 
 import ResumeManagement from "@/components/AdminDashboard/ResumeManagement";

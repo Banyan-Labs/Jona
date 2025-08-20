@@ -471,7 +471,16 @@ import type {
 
 } from "@/types/admin_application";
 import { SubscriptionService } from "./subscription_service";
-import {AdminSubscriptionData} from "../types/application"
+import {AdminSubscriptionData} from "../types/admin_application"
+// import {performScraping,sendApplication} from './subscription_service'
+// const user: AdminUser = {
+//   id: "admin-id",
+//   email: "admin@example.com",
+//   role: "admin",
+//   app_metadata: {},
+//   user_metadata: {},
+// };
+
 export class AdminService {
   // Jobs Management
   static async getAllJobs(filters?: {
@@ -968,90 +977,112 @@ export class AdminService {
     return csvContent;
   }
 
-  // Admin: Get subscription statistics
-  static async getSubscriptionStats(): Promise<{
-    totalRevenue: number;
-    monthlyRecurringRevenue: number;
-    activeSubscriptions: number;
-    churnRate: number;
-    averageRevenuePerUser: number;
-    planDistribution: Record<string, number>;
-  }> {
-    // Get payment data
-    const { data: payments } = await supabase
-      .from("payment_history")
-      .select("amount, status, payment_date");
+// Admin: Get subscription statistics
+static async getSubscriptionStats(): Promise<{
+  totalRevenue: number;
+  monthlyRecurringRevenue: number;
+  activeSubscriptions: number;
+  churnRate: number;
+  averageRevenuePerUser: number;
+  planDistribution: Record<string, number>;
+}> {
+  // Fetch enriched subscription data
+  const { data: subscriptions, error } = await supabase
+    .from("user_subscriptions")
+    .select(`
+      *,
+      plan:subscription_plans(*),
+      user_profiles!user_subscriptions_user_id_fkey(full_name, email),
+      payment_history(amount, payment_date, status),
+      user_usage(month_year, jobs_scraped, applications_sent, resumes_uploaded)
+    `);
 
-    // Get subscription data
-    const { data: subscriptions } = await supabase
-  .from("user_subscriptions")
-  .select(`
-    user_id,
-    status,
-    price_paid,
-    billing_cycle,
-    created_at,
-    canceled_at,
-    plan:subscription_plans(name)
-  `);
-
-    const totalRevenue =
-      payments?.reduce(
-        (sum, payment) =>
-          payment.status === "succeeded" ? sum + payment.amount : sum,
-        0
-      ) || 0;
-
-    const activeSubscriptions =
-      subscriptions?.filter((sub) => sub.status === "active").length || 0;
-
-    const monthlyRecurringRevenue =
-      subscriptions?.reduce((sum, sub) => {
-        if (sub.status === "active") {
-          const monthlyAmount =
-            sub.billing_cycle === "yearly"
-              ? sub.price_paid / 12
-              : sub.price_paid;
-          return sum + monthlyAmount;
-        }
-        return sum;
-      }, 0) || 0;
-
-    // Calculate churn rate (simplified)
-    const thisMonthCanceled =
-      subscriptions?.filter(
-        (sub) =>
-          sub.canceled_at &&
-          new Date(sub.canceled_at).getMonth() === new Date().getMonth()
-      ).length || 0;
-    const churnRate =
-      activeSubscriptions > 0
-        ? (thisMonthCanceled / activeSubscriptions) * 100
-        : 0;
-
-    const averageRevenuePerUser =
-      activeSubscriptions > 0
-        ? monthlyRecurringRevenue / activeSubscriptions
-        : 0;
-
-
-const typedSubscriptions = subscriptions as AdminSubscriptionData[];
-    // Plan distribution
- const planDistribution: Record<string, number> = {};
-typedSubscriptions.forEach((sub) => {
-  const planName = sub.plan?.name?.toLowerCase() || "unknown";
-  planDistribution[planName] = (planDistribution[planName] || 0) + 1;
-});
-
-    return {
-      totalRevenue,
-      monthlyRecurringRevenue,
-      activeSubscriptions,
-      churnRate,
-      averageRevenuePerUser,
-      planDistribution,
-    };
+  if (error) {
+    console.error("Error fetching subscription data:", error);
+    throw error;
   }
+
+  // Safely map to AdminSubscriptionData
+  const typedSubscriptions: AdminSubscriptionData[] = (subscriptions || []).map((sub: any) => ({
+    user_id: sub.user_id,
+    user_name: sub.user_profiles?.full_name || "Unknown",
+    user_email: sub.user_profiles?.email || "Unknown",
+    subscription: {
+      id: sub.id,
+      user_id: sub.user_id,
+      plan_id: sub.plan?.id ?? "",
+      status: sub.status,
+      billing_cycle: sub.billing_cycle,
+      price_paid: sub.price_paid,
+      created_at: sub.created_at,
+      canceled_at: sub.canceled_at,
+      current_period_start: sub.current_period_start,
+      current_period_end: sub.current_period_end,
+      plan: sub.plan ?? null,
+    },
+    total_paid: sub.payment_history?.reduce(
+      (sum: number, payment: any) =>
+        payment.status === "succeeded" ? sum + payment.amount : sum,
+      0
+    ) || 0,
+    last_payment_date: sub.payment_history?.[0]?.payment_date || null,
+    usage: sub.user_usage || [],
+  }));
+
+  // Calculate total revenue
+  const totalRevenue = typedSubscriptions.reduce((sum, sub) => sum + sub.total_paid, 0);
+
+  // Count active subscriptions
+  const activeSubscriptions = typedSubscriptions.filter(
+    (sub) => sub.subscription.status === "active"
+  ).length;
+const monthlyRecurringRevenue = typedSubscriptions.reduce((sum, sub) => {
+  const subscription = sub.subscription;
+  if (subscription?.status === "active") {
+    const monthlyAmount = subscription.billing_cycle === "yearly"
+      ? (subscription.price_paid ?? 0) / 12
+      : subscription.price_paid ?? 0;
+    return sum + monthlyAmount;
+  }
+  return sum;
+}, 0);
+  // Churn rate (simplified: cancellations this month / active subs)
+  const thisMonthCanceled = typedSubscriptions.filter((sub) => {
+    const canceledAt = sub.subscription.canceled_at;
+    return (
+      canceledAt &&
+      new Date(canceledAt).getMonth() === new Date().getMonth()
+    );
+  }).length;
+
+  const churnRate =
+    activeSubscriptions > 0
+      ? (thisMonthCanceled / activeSubscriptions) * 100
+      : 0;
+
+  // Average revenue per user
+  const averageRevenuePerUser =
+    activeSubscriptions > 0
+      ? monthlyRecurringRevenue / activeSubscriptions
+      : 0;
+
+  // Plan distribution
+  const planDistribution: Record<string, number> = {};
+  typedSubscriptions.forEach((sub) => {
+    const planName = sub.subscription.plan?.name?.toLowerCase() || "unknown";
+    planDistribution[planName] = (planDistribution[planName] || 0) + 1;
+  });
+
+  return {
+    totalRevenue,
+    monthlyRecurringRevenue,
+    activeSubscriptions,
+    churnRate,
+    averageRevenuePerUser,
+    planDistribution,
+  };
+}
+
   static async getAllSubscriptions(): Promise<AdminSubscriptionData[]> {
     const { data, error } = await supabase
       .from("user_subscriptions")
@@ -1156,15 +1187,33 @@ const subscription = await SubscriptionService.getCurrentSubscription(userId);
   if (!limits.canScrapeJobs) {
     throw new Error('Monthly job scraping limit reached');
   }
-  
-  // Perform scraping...
-  const jobs = await performScraping();
-  
-  // Track usage
-  await SubscriptionService.incrementUsage(userId, 'jobs_scraped', jobs.length);
-  
+async function sendApplication(
+  userId: string,
+  jobId: string,
+  source: string
+): Promise<void> {
+  const { error } = await supabase
+    .from("applications")
+    .insert([
+      {
+        user_id: userId,
+        job_id: jobId,
+        source: source,
+      },
+    ]);
+
+  if (error) {
+    console.error("Error sending application:", error);
+    throw error;
+  }
+}
+async function handleScraping(user: AdminUser, jobId: string) {
+  const jobs = await SubscriptionService.performScraping(jobId, user);
+  await SubscriptionService.incrementUsage(user.id, "jobs_scraped", jobs.length);
   return jobs;
 }
+
+  }
 static async getUserUsage(userId: string) {
   const { data, error } = await supabase
     .from("user_usage")
@@ -1180,16 +1229,17 @@ static async getUserUsage(userId: string) {
   return data;
 }
 // In your application sending logic
-static async sendApplication(userId: string, jobId: string) {
-  const limits = await SubscriptionService.checkUsageLimits(userId);
-  if (!limits.canSendApplications) {
-    throw new Error('Daily application limit reached');
-  }
+// // static async sendApplication(userId: string, jobId: string) {
+// //   const limits = await SubscriptionService.checkUsageLimits(userId);
+// //   if (!limits.canSendApplications) {
+// //     throw new Error('Daily application limit reached');
+// //   }
   
-  // Send application...
-  await AdminService.sendApplication(user);
+//   // Send application...
+// // await SubscriptionService.sendApplication(userId, jobId, "admin-panel");
+
   
-  // Track usage
-  await SubscriptionService.incrementUsage(userId, 'applications_sent', 1);
-}
+//   // Track usage
+//   await SubscriptionService.incrementUsage(userId, 'applications_sent', 1);
+// }
 }

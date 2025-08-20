@@ -23,7 +23,7 @@ interface ResumeManagementProps {
   onStatsUpdate: () => void;
 }
 type SortOption = "date" | "match_score" | "user_name";
-const ResumeManagement: React.FC<ResumeManagementProps> = ({
+export const ResumeManagement: React.FC<ResumeManagementProps> = ({
   user,
   onStatsUpdate,
 }) => {
