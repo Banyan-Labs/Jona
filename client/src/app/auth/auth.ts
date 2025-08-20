@@ -1,0 +1,103 @@
+"use client";
+
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import type { Session, User } from "@supabase/supabase-js"; 
+import {ensureUserProfileExists } from "@/utils/supabase-jobs";
+export const supabase = createClientComponentClient();
+
+// ✅ Sign In
+export async function signIn(
+  email: string,
+  password: string
+): Promise<{ user: User | null; session: Session | null } | null> {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    console.error("Login error:", error.message);
+    return null;
+  }
+
+  const accessToken = data?.session?.access_token;
+  if (accessToken) {
+    localStorage.setItem("sb-access-token", accessToken);
+  }
+  await ensureUserProfileExists();
+
+  return {
+    user: data.user,
+    session: data.session,
+  };
+}
+
+export async function signUp(
+  email: string,
+  password: string
+): Promise<User | null> {
+  const { data, error } = await supabase.auth.signUp({ email, password });
+
+  if (error) {
+    console.error("Signup error:", error.message);
+    return null;
+  }
+
+  const accessToken = data?.session?.access_token;
+  if (accessToken) {
+    localStorage.setItem("sb-access-token", accessToken);
+  }
+  await ensureUserProfileExists();
+
+  return data.user;
+}
+
+
+export async function signOut(): Promise<void> {
+  const { error } = await supabase.auth.signOut();
+  if (error) console.error("Logout error:", error.message);
+}
+
+
+export async function getUser(): Promise<User | null> {
+
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError) {
+    console.error("Error getting session:", sessionError.message);
+    return null;
+  }
+
+  if (!session) {
+    console.warn("No active session");
+    return null;
+  }
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) {
+    console.error("Error fetching user:", userError.message);
+    return null;
+  }
+
+  return user;
+}
+
+export async function signInWithGoogle(): Promise<void> {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+  });
+
+  if (error) {
+    console.error('Google login error:', error.message);
+  } else {
+   
+    console.log('Redirecting to Google for login...');
+  }
+}

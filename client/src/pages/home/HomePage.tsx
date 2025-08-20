@@ -1,3 +1,238 @@
+// import React, { useState, useEffect } from 'react';
+// import { 
+//   User, 
+//   Mail, 
+//   Phone, 
+//   MapPin, 
+//   Globe, 
+//   Linkedin, 
+//   Github,
+//   Briefcase,
+//   Building2,
+//   DollarSign,
+//   Save,
+//   FileText,
+//   Camera,
+//   CreditCard,
+//   BarChart3,
+//   Calendar,
+//   Settings,
+//   Crown,
+//   Zap,
+//   Check,
+//   X
+// } from 'lucide-react';
+// import type {BillingCycle,UserUsageSummary,UsagePayload, UserUsage, PaymentStatus,PaymentHistory,UserSubscription, UserSubscriptionLimits} from "../../types/application"
+
+// import { SubscriptionPlan,UserProfile,JobType,ExperienceLevel } from "@/types/application";
+
+// import { AdminSubscriptionStats} from "@/types/admin_application";
+
+// const apiService = {
+//   getCurrentUser: async (): Promise<UserProfile> => {
+//     const response = await fetch('/api/user/profile');
+//     if (!response.ok) throw new Error('Failed to fetch user profile');
+//     return response.json();
+//   },
+
+//   updateUserProfile: async (profile: Partial<UserProfile>): Promise<UserProfile> => {
+//     const response = await fetch('/api/user/profile', {
+//       method: 'PUT',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify(profile)
+//     });
+//     if (!response.ok) throw new Error('Failed to update profile');
+//     return response.json();
+//   },
+
+//   getCurrentSubscription: async (): Promise<SubscriptionPlan> => {
+//     const response = await fetch('/api/subscription');
+//     if (!response.ok) throw new Error('Failed to fetch subscription');
+//     return response.json();
+//   },
+
+//   getUsageStats: async (): Promise<UsagePayload> => {
+//     const response = await fetch('/api/usage');
+//     if (!response.ok) throw new Error('Failed to fetch usage stats');
+//     return response.json();
+//   },
+
+//   getSubscriptionPlans: async (): Promise<SubscriptionPlan[]> => {
+//     const response = await fetch('/api/subscription/plans');
+//     if (!response.ok) throw new Error('Failed to fetch subscription plans');
+//     return response.json();
+//   },
+
+//   upgradeSubscription: async (planId: string, billingCycle: 'monthly' | 'yearly'): Promise<{ url: string }> => {
+//     const response = await fetch('/api/subscription/upgrade', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ planId, billingCycle })
+//     });
+//     if (!response.ok) throw new Error('Failed to upgrade subscription');
+//     return response.json();
+//   },
+
+//   uploadAvatar: async (file: File): Promise<{ avatar_url: string }> => {
+//     const formData = new FormData();
+//     formData.append('avatar', file);
+//     const response = await fetch('/api/user/avatar', {
+//       method: 'POST',
+//       body: formData
+//     });
+//     if (!response.ok) throw new Error('Failed to upload avatar');
+//     return response.json();
+//   }
+// };
+
+// export default function ProfilePage() {
+//   const [activeTab, setActiveTab] = useState('profile');
+//   const [profile, setProfile] = useState<UserProfile | null>(null);
+// const [subscription, setSubscription] = useState<UserSubscription | null>(null);
+//   const [usage, setUsage] = useState<UsagePayload | null>(null);
+//   const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([]);
+//   const [isEditing, setIsEditing] = useState(false);
+//   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+//   const [loading, setLoading] = useState(false);
+//   const [initialLoading, setInitialLoading] = useState(true);
+ 
+//  const jobs = usageStats?.['current_month']?.['jobs_scraped'] ?? usagePayload?.['jobs_scraped'] ?? 0;
+//   const [error, setError] = useState<string | null>(null);
+// const percent = isUserUsageSummary(usage) ? usage.percentage_used.jobs : 0;
+//   // Load initial data
+//   useEffect(() => {
+//     const loadData = async () => {
+//       try {
+//         setInitialLoading(true);
+//         const [userProfile, userSubscription, userUsage, plans] = await Promise.all([
+//           apiService.getCurrentUser(),
+//           apiService.getCurrentSubscription(),
+//           apiService.getUsageStats(),
+//           apiService.getSubscriptionPlans()
+//         ]);
+        
+//         setProfile(userProfile);
+//         setSubscription(userSubscription);
+//         setUsage(userUsage);
+//         setSubscriptionPlans(plans);
+//       } catch (err) {
+//         setError(err instanceof Error ? err.message : 'Failed to load data');
+//       } finally {
+//         setInitialLoading(false);
+//       }
+//     };
+
+//     loadData();
+//   }, []);
+
+//   // Profile form handlers
+//   const handleProfileUpdate = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     if (!profile) return;
+
+//     setLoading(true);
+//     try {
+//       const updatedProfile = await apiService.updateUserProfile(profile);
+//       setProfile(updatedProfile);
+//       setIsEditing(false);
+//     } catch (err) {
+//       setError(err instanceof Error ? err.message : 'Failed to update profile');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleInputChange = (field: keyof UserProfile, value: any) => {
+//     if (!profile) return;
+//     setProfile(prev => prev ? {
+//       ...prev,
+//       [field]: value
+//     } : null);
+//   };
+
+//   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const file = e.target.files?.[0];
+//     if (!file || !profile) return;
+
+//     setLoading(true);
+//     try {
+//       const result = await apiService.uploadAvatar(file);
+//       setProfile(prev => prev ? { ...prev, avatar_url: result.avatar_url } : null);
+//     } catch (err) {
+//       setError(err instanceof Error ? err.message : 'Failed to upload avatar');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleSubscriptionUpgrade = async (planId: string) => {
+//     setLoading(true);
+//     try {
+//       const result = await apiService.upgradeSubscription(planId, billingCycle);
+//       // Redirect to Stripe checkout
+//       window.location.href = result.url;
+//     } catch (err) {
+//       setError(err instanceof Error ? err.message : 'Failed to upgrade subscription');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const formatCurrency = (amount: number) => {
+//     return new Intl.NumberFormat('en-US', {
+//       style: 'currency',
+//       currency: 'USD'
+//     }).format(amount);
+//   };
+
+//   const getProgressColor = (percentage: number) => {
+//     if (percentage < 50) return 'bg-green-500';
+//     if (percentage < 80) return 'bg-yellow-500';
+//     return 'bg-red-500';
+//   };
+
+//   const getExperienceLevelLabel = (level: ExperienceLevel): string => {
+//     const labels: Record<ExperienceLevel, string> = {
+//       entry: 'Entry Level',
+//       mid: 'Mid Level',
+//       senior: 'Senior Level',
+//       executive: 'Executive'
+//     };
+//     return labels[level];
+//   };
+
+//   if (initialLoading) {
+//     return (
+//       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+//         <div className="text-center">
+//           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+//           <p className="mt-4 text-gray-600">Loading your profile...</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+//         <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+//           <div className="text-red-600 text-4xl mb-4">⚠️</div>
+//           <h2 className="text-xl font-bold text-gray-900 mb-2">Error Loading Profile</h2>
+//           <p className="text-gray-600 mb-4">{error}</p>
+//           <button
+//             onClick={() => window.location.reload()}
+//             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+//           >
+//             Retry
+//           </button>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (!profile || !subscription || !usage) {
+//     return null;
+//   }
 import React, { useState, useEffect } from 'react';
 import { 
   User, 
@@ -22,11 +257,27 @@ import {
   Check,
   X
 } from 'lucide-react';
-import type {BillingCycle,UserUsage, PaymentStatus,PaymentHistory,UserSubscription, UserSubscriptionLimits} from "../../types/application"
+import type {
+  BillingCycle,
+  UserUsageSummary,
+  UsagePayload, 
+  UserUsage, 
+  PaymentStatus,
+  PaymentHistory,
+  UserSubscription, 
+  UserSubscriptionLimits
+} from "../../types/application"
 
-import { SubscriptionPlan,UserProfile,UsageStats,UserUsageSummary,ExperienceLevel } from "@/types/application";
-// API service functions (replace with your actual API calls)
-import { AdminSubscriptionStats,} from "@/types/admin_application";
+// import type {BillingCycle,UserUsageSummary,UsagePayload, UserUsage, PaymentStatus,PaymentHistory,UserSubscription, UserSubscriptionLimits} from "../../types/application"
+
+import { SubscriptionPlan,UserProfile,JobType,ExperienceLevel,UsageSummary,EnhancedUserProfile } from "@/types/application";
+
+import { AdminSubscriptionStats} from "@/types/admin_application";
+
+// Type guard function
+function isUserUsageSummary(data: UsagePayload): data is UserUsageSummary {
+  return 'current_month' in data && 'limits' in data && 'percentage_used' in data;
+}
 
 const apiService = {
   getCurrentUser: async (): Promise<UserProfile> => {
@@ -45,13 +296,13 @@ const apiService = {
     return response.json();
   },
 
-  getCurrentSubscription: async (): Promise<SubscriptionPlan> => {
+  getCurrentSubscription: async (): Promise<UserSubscription> => {
     const response = await fetch('/api/subscription');
     if (!response.ok) throw new Error('Failed to fetch subscription');
     return response.json();
   },
 
-  getUsageStats: async (): Promise<UsageStats> => {
+  getUsageStats: async (): Promise<UsagePayload> => {
     const response = await fetch('/api/usage');
     if (!response.ok) throw new Error('Failed to fetch usage stats');
     return response.json();
@@ -85,17 +336,67 @@ const apiService = {
   }
 };
 
-export default function ProfilePage() {
+export default function HomePage() {
   const [activeTab, setActiveTab] = useState('profile');
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [usage, setUsage] = useState<UsageStats | null>(null);
+  const [subscription, setSubscription] = useState<UserSubscription | null>(null);
+  const [usage, setUsage] = useState<UsagePayload | null>(null);
   const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Helper functions for data access
+  const getUsageData = () => {
+    if (!usage) return null;
+    return isUserUsageSummary(usage) ? usage : null;
+  };
+
+  const getUserUsageData = () => {
+    if (!usage) return null;
+    return !isUserUsageSummary(usage) ? usage : null;
+  };
+
+  // Get jobs scraped count
+  const getJobsScraped = (): number => {
+    const usageSummary = getUsageData();
+    const userUsage = getUserUsageData();
+    return usageSummary?.current_month?.jobs_scraped ?? userUsage?.jobs_scraped ?? 0;
+  };
+
+  // Get percentage used for jobs
+  const getJobsPercentage = (): number => {
+    const usageSummary = getUsageData();
+    return usageSummary?.percentage_used?.jobs ?? 0;
+  };
+
+  // Get plan name from subscription
+  const getPlanName = (): string => {
+    return subscription?.plan?.name ?? 'Free';
+  };
+
+  // Check if features are enabled
+  const isAutoScrapeEnabled = (): boolean => {
+    return subscription?.plan?.auto_scrape_enabled ?? false;
+  };
+
+  const isPrioritySupportEnabled = (): boolean => {
+    return subscription?.plan?.priority_support ?? false;
+  };
+
+  // Get limits
+  const getLimits = () => {
+    const usageSummary = getUsageData();
+    return usageSummary?.limits ?? {
+      jobs_per_month: 0,
+      resumes: 0,
+      applications_per_day: 0,
+      auto_scrape_enabled: false,
+      priority_support: false
+    };
+  };
 
   // Load initial data
   useEffect(() => {
@@ -176,7 +477,8 @@ export default function ProfilePage() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | undefined) => {
+    if (amount === undefined) return '$0.00';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
@@ -231,6 +533,9 @@ export default function ProfilePage() {
   if (!profile || !subscription || !usage) {
     return null;
   }
+
+  const usageData = getUsageData();
+  const limits = getLimits();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -316,7 +621,7 @@ export default function ProfilePage() {
                         <div className="flex items-center gap-2 mt-2">
                           <div className="flex items-center gap-1">
                             <Crown className="w-4 h-4 text-yellow-500" />
-                            <span className="text-sm font-medium text-gray-700">{subscription.plan_name}</span>
+                            <span className="text-sm font-medium text-gray-700">{subscription?.plan?.name ?? "Free"}</span>
                           </div>
                           <span className={`px-2 py-1 text-xs rounded-full ${
                             subscription.status === 'active' 
@@ -583,12 +888,12 @@ export default function ProfilePage() {
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-bold text-blue-900">Current Plan: {subscription.plan_name}</h3>
+                      <h3 className="text-xl font-bold text-blue-900">Current Plan: {subscription?.plan?.name ?? "Free"}</h3>
                       <p className="text-blue-700">
                         {subscription.status === 'active' ? 'Active until' : 'Expires on'} {new Date(subscription.current_period_end).toLocaleDateString()}
                       </p>
                       <div className="mt-2 flex items-center gap-4">
-                        {subscription.auto_scrape_enabled && (
+                        {subscription?.plan?.auto_scrape_enabled ?? false && (
                           <span className="flex items-center gap-1 text-sm text-blue-700">
                             <Zap className="w-4 h-4" />
                             Auto-scraping enabled
