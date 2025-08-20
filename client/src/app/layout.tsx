@@ -1,12 +1,12 @@
-import AppShell from './components/AppShell';
-import { AuthUser } from './types/application';
+import AppShell from '../components/AppShell';
+import { AuthUser } from '../types/application';
 import './globals.css';
 import { Inter } from 'next/font/google';
 import React from 'react';
-import { ThemeProvider } from './context/ThemeContext';
+import { ThemeProvider } from '../context/ThemeContext';
 import Script from "next/script";
 import { useEffect } from "react";
-import { supabase } from "@/app/lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {

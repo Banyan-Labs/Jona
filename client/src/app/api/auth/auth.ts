@@ -2,7 +2,7 @@
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import type { Session, User } from "@supabase/supabase-js"; 
-import {ensureUserProfileExists } from "@/app/utils/supabase-jobs";
+import {ensureUserProfileExists } from "@/utils/supabase-jobs";
 export const supabase = createClientComponentClient();
 
 // ✅ Sign In

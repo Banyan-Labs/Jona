@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Mail, Info } from "lucide-react";
-import { useTheme } from '@/app/context/ThemeContext';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function ContactPage() {
   const { darkMode } = useTheme();
