@@ -14,10 +14,10 @@ import {
 import {  AdminUser } from "@/types/admin_application";
 import { AuthUser, DashboardStats} from "@/types/application";
 
-// import { AdminService } from '@/utils/supabase-admin';
-import JobManagement from "./JobsManagement";
-import UserManagement from "./UserManagement";
-import ResumeManagement from "./ResumeManagement";
+import { AdminService } from '@/utils/admin-jobs';
+import {JobManagement} from "./JobsManagement";
+import {UserManagement} from "./UserManagement";
+import{ ResumeManagement} from "./ResumeManagement"
 import ScraperTabs from "../ScraperTab";
 
 interface AdminDashboardProps {

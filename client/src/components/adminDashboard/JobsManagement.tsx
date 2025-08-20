@@ -72,7 +72,7 @@ export const normalize = <T extends string | number | boolean | object>(
   return value === null ? undefined : value;
 };
 
-const JobManagement: React.FC<JobManagementProps> = ({
+export const JobManagement: React.FC<JobManagementProps> = ({
   user,
   onStatsUpdate,
 }) => {

@@ -27,7 +27,7 @@ interface UserManagementProps {
 }
 type FilterStatus = 'all' | 'active' | 'inactive'; 
 
-const UserManagement: React.FC<UserManagementProps> = ({ user: user, onStatsUpdate }) => {
+export const UserManagement: React.FC<UserManagementProps> = ({ user: user, onStatsUpdate }) => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
