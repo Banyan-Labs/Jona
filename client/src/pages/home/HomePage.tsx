@@ -22,7 +22,7 @@ import {
   Check,
   X
 } from 'lucide-react';
-import type {BillingCycle,UserUsage, PaymentStatus,PaymentHistory,UserSubscription, UserSubscriptionLimits} from "../../../types/application"
+import type {BillingCycle,UserUsage, PaymentStatus,PaymentHistory,UserSubscription, UserSubscriptionLimits} from "../../types/application"
 
 import { SubscriptionPlan,UserProfile,UsageStats,UserUsageSummary,ExperienceLevel } from "@/types/application";
 // API service functions (replace with your actual API calls)
