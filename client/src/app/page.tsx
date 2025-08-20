@@ -1,7 +1,7 @@
 
-import { getUserServer } from '@/app/supabase/user';
-import AppShell from '@/app/components/AppShell'; // or Dashboard if directly
-import type { AuthUser } from '@/app/types/application';
+import { getUserServer } from '@/supabase/user';
+import AppShell from '@/components/AppShell'; // or Dashboard if directly
+import type { AuthUser } from '@/types/application';
 import { redirect } from "next/navigation";
 
 export default async function Page() {

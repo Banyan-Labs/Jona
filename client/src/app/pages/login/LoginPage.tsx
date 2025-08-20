@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { AuthUser } from "@supabase/supabase-js";
-import { supabase } from "@/app/lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 
 import { signInWithGoogle } from "@/app/api/auth/auth";
 import { Shield } from "lucide-react";
-import HandleOAuthRedirect from '@/app/components/HandleOAuthRedirect';
+import HandleOAuthRedirect from '@/components/HandleOAuthRedirect';
 
 // import { signIn, signInWithGoogle } from '@/app/auth/api/auth';
 function LoginPage({

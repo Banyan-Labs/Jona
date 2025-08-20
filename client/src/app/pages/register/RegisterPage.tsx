@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AuthUser } from "@supabase/supabase-js";
-import { supabase } from "@/app/lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 
 function RegisterPage({
   onSuccess,

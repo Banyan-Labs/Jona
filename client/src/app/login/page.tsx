@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import AuthForm from "@/app/components/AuthForm";
-import { AuthUser } from "@/app/types/application"; // or define this in a shared types file if needed
+import AuthForm from "@/components/AuthForm";
+import { AuthUser } from "@/types/application"; // or define this in a shared types file if needed
 
 export default function LoginPageWrapper() {
   const [currentPage, setCurrentPage] = useState<"login" | "register" | "dashboard">("login");
