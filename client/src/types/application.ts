@@ -404,14 +404,17 @@ export interface UserSubscription {
 export interface UserUsage {
   id: string;
   user_id: string;
-  month_year: string;
+  month_year: string;            
   jobs_scraped: number;
   applications_sent: number;
   resumes_uploaded: number;
-  created_at?: string;
-  updated_at?: string;
+  errors_encountered?: number;     
+  bot_blocks?: number;             
+  success_rate?: number;          
+  notes?: string;                   
+  created_at?: string;         
+  updated_at?: string;          
 }
-
 export interface CurrentSubscription {
   subscription_id: string;
   plan_name: string;
@@ -461,18 +464,32 @@ export interface UserUsageSummary {
     jobs_scraped: number;
     applications_sent: number;
     resumes_uploaded: number;
+    errors_encountered?: number;
+    bot_blocks?: number;
+    success_rate?: number;
+  };
+  previous_month?: {
+    jobs_scraped: number;
+    applications_sent: number;
+    resumes_uploaded: number;
+    success_rate?: number;
   };
   limits: UserSubscriptionLimits;
   percentage_used: {
-    jobs: number;
+    jobs: number;      
     applications: number;
-    resumes: number;
+    resumes: number;      
   };
+}
+function isUserUsageSummary(data: UsagePayload): data is UserUsageSummary {
+  return 'current_month' in data && 'limits' in data && 'percentage_used' in data;
 }
 
 export type ExperienceLevel = "entry" | "mid" | "senior" | "executive";
 export type JobType = "full_time" | "part_time" | "contract" | "internship" | "freelance";
-export type UsageStats = UsageSummary | UserUsage;
+export type UsagePayload = UserUsageSummary | UserUsage;
+
+// export type UsageStats = UserUsageSummary | UserUsage;
 export type SubscriptionStatus = "active" | "canceled" | "expired" | "past_due" | "unpaid";
 export type BillingCycle = "monthly" | "yearly";
 export type PaymentStatus = "succeeded" | "failed" | "pending" | "canceled";
