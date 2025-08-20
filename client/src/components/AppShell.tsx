@@ -3,9 +3,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 import Navbar from "@/components/navbar";
-import HomePage from "@/app/pages/home/HomePage";
-import AboutPage from "../app/pages/about/AboutPage";
-import ContactPage from "../app/pages/contact/ContactPage";
+import HomePage from "@/pages/home/HomePage";
+import AboutPage from "../pages/about/AboutPage";
+import ContactPage from "../pages/contact/ContactPage";
 import AuthForm from "@/components/AuthForm";
 import Dashboard from "./dashboard/Dashboard";
 import Footer from "./footer/Footer";
