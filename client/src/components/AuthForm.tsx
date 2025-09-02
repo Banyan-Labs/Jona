@@ -1,32 +1,25 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthUserContext";
 import { supabase } from "@/lib/supabaseClient";
-import { signInWithGoogle } from "@/app/api/auth/auth"
-import { Shield } from "lucide-react";
-interface AuthUser {
-  id: string;
-  email: string;
-  user_metadata?: {
-    role?: "user" | "admin";
-    full_name?: string;
-  };
-}
-export default function AuthForm({
-  mode,
-  onSuccessAction,
-  setCurrentPageAction,
-}: {
+import type { AuthUser, UserRole } from "@/types";
+
+export interface AuthFormProps {
   mode: "login" | "register";
-  onSuccessAction: (user: AuthUser) => void;
-  setCurrentPageAction: (page: string) => void;
-}) {
+  onSuccessAction: (user?: AuthUser) => void;
+}
+
+export default function AuthForm({ mode, onSuccessAction }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState<"user" | "admin">("user");
+  const [role, setRole] = useState<UserRole>("user");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,67 +28,90 @@ export default function AuthForm({
 
     try {
       if (mode === "register") {
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error: regError } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
               full_name: fullName,
-              role: role,
+              role,
             },
           },
         });
 
-        if (error) throw error;
+        if (regError) throw regError;
 
-        if (data.user) {
-          alert(
-            "Registration successful! Please check your email for verification."
-          );
-          setCurrentPageAction("login");
+        if (data.user && !data.session) {
+          alert("Registration successful! Please check your email for verification.");
+          router.push("/login");
+          return;
+        }
+
+        if (data.session) {
+          console.log("Registration successful with immediate session");
         }
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const user = await login(email, password);
+        if (user) {
+          const role = (user.user_metadata?.role || user.app_metadata?.role || "user") as UserRole;
+          const targetPath = role === "admin" ? "/admin/dashboard" : "/dashboard";
+          router.push(targetPath);
 
-        if (error) throw error;
+          const authUser: AuthUser = {
+            id: user.id,
+            email: user.email || "",
+            role,
+            aud: user.aud || "",
+            created_at: user.created_at || "",
+            app_metadata: user.app_metadata || {},
+            user_metadata: user.user_metadata || {},
+          };
 
-        if (data.user) {
-          onSuccessAction(data.user as AuthUser);
-          setCurrentPageAction("dashboard");
+          onSuccessAction(authUser);
         }
       }
-    } catch (error: any) {
-      setError(error.message);
+    } catch (err: any) {
+      console.error("Auth error:", err);
+      setError(err.message || "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setError("");
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      console.error("Google sign in error:", err);
+      setError(err.message || "Google sign in failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "var(--bg-color)",
-        color: "var(--text-color)",
-      }}
-      className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
-    >
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {mode === "login"
-              ? "Sign in to your account"
-              : "Create your account"}
+            {mode === "login" ? "Sign in to your account" : "Create your account"}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             {mode === "login" ? (
               <>
                 Don't have an account?{" "}
                 <button
-                  onClick={() => setCurrentPageAction("register")}
+                  onClick={() => router.push("/register")}
                   className="font-medium text-blue-600 hover:text-blue-500"
+                  disabled={loading}
                 >
                   Sign up
                 </button>
@@ -104,8 +120,9 @@ export default function AuthForm({
               <>
                 Already have an account?{" "}
                 <button
-                  onClick={() => setCurrentPageAction("login")}
+                  onClick={() => router.push("/login")}
                   className="font-medium text-blue-600 hover:text-blue-500"
+                  disabled={loading}
                 >
                   Sign in
                 </button>
@@ -118,10 +135,7 @@ export default function AuthForm({
           <div className="space-y-4">
             {mode === "register" && (
               <div>
-                <label
-                  htmlFor="fullName"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
                   Full Name
                 </label>
                 <input
@@ -131,17 +145,15 @@ export default function AuthForm({
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  disabled={loading}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100"
                   placeholder="Enter your full name"
                 />
               </div>
             )}
 
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
               <input
@@ -152,81 +164,70 @@ export default function AuthForm({
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                disabled={loading}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100"
                 placeholder="Enter your email"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
-                autoComplete={
-                  mode === "login" ? "current-password" : "new-password"
-                }
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                disabled={loading}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100"
                 placeholder="Enter your password"
               />
             </div>
 
             {mode === "register" && (
               <div>
-                <label
-                  htmlFor="role"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="role" className="block text-sm font-medium text-gray-700">
                   Account Type
                 </label>
                 <select
                   id="role"
                   name="role"
                   value={role}
-                  onChange={(e) => setRole(e.target.value as "user" | "admin")}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  onChange={(e) => setRole(e.target.value as UserRole)}
+                  disabled={loading}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100"
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
+                  <option value="job_seeker">Job Seeker</option>
                 </select>
               </div>
             )}
           </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-              {error}
-            </div>
-          )}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <div>
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              {loading
-                ? "Processing..."
-                : mode === "login"
-                ? "Sign in"
-                : "Sign up"}
+              {loading ? "Processing..." : mode === "login" ? "Sign In" : "Register"}
             </button>
           </div>
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500 mb-2">Or sign in with</p>
+
+          <div className="text-center">
             <button
-              onClick={signInWithGoogle}
-              className="w-full flex justify-center items-center gap-2 py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-50 text-sm font-medium text-gray-700"
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="mt-2 text-sm text-blue-600 hover:text-blue-500"
             >
-              <Shield className="w-5 h-5" />
               Sign in with Google
             </button>
           </div>

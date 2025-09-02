@@ -1,5 +1,4 @@
 
-
 "use client";
 import React, { useState, useEffect } from "react";
 import {
@@ -9,38 +8,51 @@ import {
   RefreshCw,
   BarChart3,
   Play,
-  Activity
+  Activity,
+  CreditCard
 } from "lucide-react";
-import {  AdminUser } from "@/types/admin_application";
-import { AuthUser, DashboardStats} from "@/types/application";
+import { AdminUser } from "@/types/admin";
+import { AuthUser, DashboardStatsProps, UserJobStatus} from "@/types/index";
+import {Job}  from "@/types/index";
 
-import { AdminService } from '@/utils/admin-jobs';
 import {JobManagement} from "./JobsManagement";
 import {UserManagement} from "./UserManagement";
 import{ ResumeManagement} from "./ResumeManagement"
 import ScraperTabs from "../ScraperTab";
+import AdminSubscriptionManagement from "./SubscriptionManagement";
+// import {SubscriptionService} from "../../app/service-actions/subscription-server";
+import {SubscriptionService} from "@/utils/subscription-service";
+import {getInitialDashboardStats} from '@/helpers/dashboardStats'
+import { useUserJobStatus } from "@/hooks/useUserJobStatus";
+import AdminSubscriptionTab from "./SubscriptionTabs";
+import { FilterOptions } from "@/types/admin";
 
-interface AdminDashboardProps {
-  user: AuthUser;
-    role: "user" | "admin"; 
+export interface AdminDashboardProps {
+  initialJobs: Job[];
+  initialUsers: AdminUser[]; // ✅ Add this
+  initialStats: DashboardStatsProps;
+  initialFilters: FilterOptions;
+  user: AuthUser; // ✅ Fix type
+  role: "admin";
 }
-type TabId = "overview" | "jobs" | "users" | "resumes" | "scraper";
+
+
+
+// Update the TabId type to include subscriptions
+type TabId = "overview" | "jobs" | "users" | "resumes" | "scraper" | "subscriptions";
+
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
-  const [stats, setStats] = useState<DashboardStats>({
-    totalJobs: 0,
-    appliedJobs: 0,
-    savedJobs: 0,
-    pendingJobs: 0,
-    interviewJobs: 0,
-    offerJobs: 0,
-    totalUsers: 0,
-    activeUsers: 0,
-    totalResumes: 0,
-    avgMatchScore: 0,
-    totalApplications: 0,
-  });
+ const [stats, setStats] = useState<DashboardStatsProps>(getInitialDashboardStats());
   const [loading, setLoading] = useState(true);
+
+  // Add subscription stats
+  const [subscriptionStats, setSubscriptionStats] = useState({
+    totalRevenue: 0,
+    activeSubscriptions: 0,
+    monthlyRecurringRevenue: 0
+  });
+
   const tabs: {
     id: TabId;
     label: string;
@@ -56,18 +68,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
       icon: FileText,
       count: stats.totalResumes,
     },
+    {
+      id: "subscriptions", 
+      label: "Subscriptions", 
+      icon: CreditCard, 
+      count: subscriptionStats.activeSubscriptions
+    },
     { id: "scraper", label: "Scraper", icon: Play },
   ];
 
+  const statusMap = useUserJobStatus();
+
   useEffect(() => {
     fetchStats();
+    fetchSubscriptionStats();
   }, []);
 
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/scraper/adminStats");
-      const dashboardStats: DashboardStats = await res.json();
+      const res = await fetch("/api/admin/dashboard/stats");
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const dashboardStats: DashboardStatsProps = await res.json();
       setStats(dashboardStats);
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -76,8 +100,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
     }
   };
 
+  const fetchSubscriptionStats = async () => {
+    try {
+      const res = await fetch("/api/admin/dashboard/subscriptions/stats");
+      if (res.ok) {
+        const subStats = await res.json();
+        setSubscriptionStats({
+          totalRevenue: subStats.totalRevenue || 0,
+          activeSubscriptions: subStats.activeSubscriptions || 0,
+          monthlyRecurringRevenue: subStats.monthlyRecurringRevenue || 0
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching subscription stats:", error);
+    }
+  };
+
   const refreshData = () => {
     fetchStats();
+    fetchSubscriptionStats();
   };
 
   // ✅ Only return early after hooks are declared
@@ -108,7 +149,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                 Admin Dashboard
               </h1>
               <p className="text-gray-600">
-                Manage jobs, users, resumes, and scraping operations
+                Manage jobs, users, resumes, subscriptions and scraping operations
               </p>
             </div>
             <div className="flex gap-2">
@@ -125,9 +166,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards - Only shown on overview */}
+        {/* Enhanced Stats Cards - Only shown on overview */}
         {activeTab === "overview" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-blue-100 text-blue-600">
@@ -193,8 +234,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                 </div>
               </div>
             </div>
+
+            {/* New Subscription Stats Card */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="p-3 rounded-full bg-emerald-100 text-emerald-600">
+                  <CreditCard className="w-6 h-6" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm text-gray-600">Revenue</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    ${subscriptionStats.totalRevenue.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-emerald-600">
+                    {subscriptionStats.activeSubscriptions} active
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Tabs */}
           <div className="bg-white rounded-lg shadow mb-8">
@@ -289,6 +349,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                       </button>
 
                       <button
+                        onClick={() => setActiveTab("subscriptions")}
+                        className="w-full text-left p-3 bg-white rounded border hover:bg-gray-50"
+                      >
+                        <div className="flex items-center">
+                          <CreditCard className="w-5 h-5 text-emerald-500 mr-3" />
+                          <div>
+                            <div className="font-medium">Manage Subscriptions</div>
+                            <div className="text-sm text-gray-600">
+                              ${subscriptionStats.totalRevenue.toLocaleString()} total revenue
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+
+                      <button
                         onClick={() => setActiveTab("scraper")}
                         className="w-full text-left p-3 bg-white rounded border hover:bg-gray-50"
                       >
@@ -357,6 +432,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                       <div className="bg-white p-3 rounded border">
                         <div className="flex items-center justify-between">
                           <div>
+                            <div className="font-medium">Monthly Revenue</div>
+                            <div className="text-sm text-gray-600">
+                              Subscription income
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-lg font-semibold">
+                              ${subscriptionStats.monthlyRecurringRevenue.toLocaleString()}
+                            </div>
+                            <div className="text-sm text-emerald-600">MRR</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-white p-3 rounded border">
+                        <div className="flex items-center justify-between">
+                          <div>
                             <div className="font-medium">User Activity</div>
                             <div className="text-sm text-gray-600">
                               Active users
@@ -385,18 +477,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
             {/* Jobs Management */}
             {activeTab === "jobs" && (
-          <JobManagement
-  user={{
-    ...user,
-    user_metadata: {
-      ...user.user_metadata,
-      role: user.user_metadata.role ?? "admin", // fallback if undefined
-    },
-  }}
-  onStatsUpdate={refreshData}
-/>
-
-       )}
+              <JobManagement
+                user={{
+                  ...user,
+                  user_metadata: {
+                    ...user.user_metadata,
+                    role: user.user_metadata.role ?? "admin", // fallback if undefined
+                  },
+                }}
+                onStatsUpdate={refreshData}
+              />
+            )}
 
             {/* Users Management */}
             {activeTab === "users" && (
@@ -408,6 +499,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
               <ResumeManagement user={user} onStatsUpdate={refreshData} />
             )}
 
+            {/* Subscriptions Management */}
+            {activeTab === "subscriptions" && (
+              <AdminSubscriptionManagement />
+
+            )}
+        {activeTab === "subscriptions" && (
+              
+              <AdminSubscriptionTab />
+            )}  
             {/* Scraper Tab */}
             {activeTab === "scraper" && <ScraperTabs user={user} />}
           </div>
@@ -418,5 +518,3 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 };
 
 export default AdminDashboard;
-
-

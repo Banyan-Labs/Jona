@@ -1,9 +1,10 @@
 "use client";
 import React, { useState, useMemo, useEffect } from "react";
-import type { Job, JobFilterState } from "@/types/application";
+import type { Job, JobFilterState } from "@/types/index";
 import DashboardStats from "./DashboardStats";
 import JobFilter from "../job-filter/JobFilter";
-
+import ApplicationSentPanel from "../ApplicationsSentPanel"
+// import { DashboardStatsProps } from "../../types/application";
 export interface JobTrackerTabProps {
   jobs: Job[];
   onJobUpdateAction: (jobId: string, update: Partial<Job>) => void;
@@ -12,7 +13,10 @@ export interface JobTrackerTabProps {
   darkMode: boolean;
   userId: string;
 }
-// fixed
+interface DashboardStatsProps {
+  stats: Partial<DashboardStatsProps>;
+}
+
 export const JobTrackerTab: React.FC<JobTrackerTabProps> = ({
   jobs,
   onJobUpdateAction,
@@ -30,12 +34,12 @@ export const JobTrackerTab: React.FC<JobTrackerTabProps> = ({
     fromDate: undefined,
     toDate: undefined,
   });
-const [currentPage, setCurrentPage] = useState(1);
-const jobsPerPage = 20;
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 20;
 
   const [pendingJobId, setPendingJobId] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-
+  // const jobDate = job.date && !isNaN(Date.parse(job.date)) ? new Date(job.date) : null;
   const formatDate = (d?: string) =>
     d ? new Date(d).toLocaleString("en-US") : "n/a";
 
@@ -65,9 +69,9 @@ const jobsPerPage = 20;
     }
   }, []);
 
-useEffect(() => {
-  setCurrentPage(1);
-}, [filters]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
   const persistJobsForUser = (updatedJobs: Job[]) => {
     localStorage.setItem(`jobs_${userId}`, JSON.stringify(updatedJobs));
   };
@@ -90,81 +94,86 @@ useEffect(() => {
     setShowConfirmModal(false);
     setPendingJobId(null);
   };
-const filteredJobs = useMemo(() => {
-  return jobs.filter((job) => {
-    const { status, category, searchTerm, fromDate, toDate } = filters;
+  const filteredJobs = useMemo(() => {
+    return jobs.filter((job) => {
+      const { status, category, searchTerm, fromDate, toDate } = filters;
 
-    if (status !== "all") {
-      switch (status) {
-        case "applied":
-          if (!job.applied) return false;
-          break;
-        case "saved":
-          if (!job.saved) return false;
-          break;
-        case "pending":
-          if (job.applied) return false;
-          break;
-        case "interview":
-        case "offer":
-        case "rejected":
-          if (job.status !== status) return false;
-          break;
+      if (status !== "all") {
+        switch (status) {
+          case "applied":
+            if (!job.applied) return false;
+            break;
+          case "saved":
+            if (!job.saved) return false;
+            break;
+          case "pending":
+            if (job.applied) return false;
+            break;
+          case "interview":
+          case "offer":
+          case "rejected":
+            if (job.status !== status) return false;
+            break;
+        }
       }
-    }
-console.log("🔍 Current filters:", filters);
-console.log("🧪 Checking job:", job.title);
-    if (category !== "all") {
-      const combinedFields = [
-        job.title,
-        job.search_term,
-        job.job_description,
-        job.category
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+      // console.log("🔍 Current filters:", filters);
+      // console.log("🧪 Checking job:", job.title);
+      if (category !== "all") {
+        const combinedFields = [
+          job.title,
+          job.search_term,
+          job.job_description,
+          job.category,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
 
-      if (!combinedFields.includes(category.toLowerCase())) return false;
-    }
+        if (!combinedFields.includes(category.toLowerCase())) return false;
+      }
 
-    if (searchTerm?.trim()) {
-      const q = searchTerm.toLowerCase();
-      const match =
-        job.title?.toLowerCase().includes(q) ||
-        job.company?.toLowerCase().includes(q) ||
-        job.job_location?.toLowerCase().includes(q);
-      if (!match) return false;
-    }
+      if (searchTerm?.trim()) {
+        const q = searchTerm.toLowerCase();
+        const match =
+          job.title?.toLowerCase().includes(q) ||
+          job.company?.toLowerCase().includes(q) ||
+          job.job_location?.toLowerCase().includes(q);
+        if (!match) return false;
+      }
+      const jobDate = job.date ? new Date(job.date) : null;
 
-    if (fromDate && new Date(job.date) < new Date(fromDate)) return false;
-    if (toDate && new Date(job.date) > new Date(toDate)) return false;
+      if (fromDate && jobDate && jobDate < new Date(fromDate)) return false;
+      if (toDate && jobDate && jobDate > new Date(toDate)) return false;
+      // if (fromDate && new Date(job.date) < new Date(fromDate)) return false;
+      // if (toDate && new Date(job.date) > new Date(toDate)) return false;
 
-    return true;
-  });
-}, [jobs, filters]);
+      return true;
+    });
+  }, [jobs, filters]);
 
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
 
-const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+  const paginatedJobs = useMemo(() => {
+    const start = (currentPage - 1) * jobsPerPage;
+    return filteredJobs.slice(start, start + jobsPerPage);
+  }, [filteredJobs, currentPage]);
 
-const paginatedJobs = useMemo(() => {
-  const start = (currentPage - 1) * jobsPerPage;
-  return filteredJobs.slice(start, start + jobsPerPage);
-}, [filteredJobs, currentPage]);
-
-const dashboardStats = {
-  totalJobs: jobs.length,
-  appliedJobs: jobs.filter((j) => j.applied).length,
-  savedJobs: jobs.filter((j) => j.saved).length,
-  pendingJobs: jobs.filter((j) => !j.applied).length,
-  interviewJobs: jobs.filter((j) => j.status === "interview").length,
-  offerJobs: jobs.filter((j) => j.status === "offer").length,
-  rejectedJobs: jobs.filter((j) => j.status === "rejected").length
-};
-
-
-
-
+  const dashboardStats = {
+    totalJobs: jobs.length,
+    appliedJobs: jobs.filter((j) => j.applied).length,
+    savedJobs: jobs.filter((j) => j.saved).length,
+    pendingJobs: jobs.filter((j) => !j.applied).length,
+    interviewJobs: jobs.filter((j) => j.status === "interview").length,
+    offerJobs: jobs.filter((j) => j.status === "offer").length,
+    totalUsers: 0,
+    rejectedJobs: 0,
+    matchRate: 0,
+    matchScore: 0,
+    activeUsers: 0,
+    totalResumes: 0,
+    avgMatchScore: 0,
+    totalApplications: 0,
+  };
   return (
     <>
       <DashboardStats stats={dashboardStats} darkMode={darkMode} />
@@ -174,14 +183,13 @@ const dashboardStats = {
         darkMode={darkMode}
       />
 
-   <div className="mt-6 space-y-4">
+      <div className="mt-6 space-y-4">
         {paginatedJobs.map((job) => (
           <div
             key={job.id}
             className={`p-4 rounded shadow transition ${
               darkMode ? "bg-gray-800 text-white" : "bg-white border text-black"
             }`}
-            
           >
             <div className="flex justify-between items-start">
               <div>
@@ -192,22 +200,26 @@ const dashboardStats = {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => onToggleSavedAction(job.id, job.saved ?? false)}
+                  onClick={() =>
+                    onToggleSavedAction(job.id, job.saved ?? false)
+                  }
                   className={`px-2 py-1 rounded text-sm transition-colors ${
                     job.saved
                       ? darkMode
                         ? "bg-yellow-300 text-black hover:bg-yellow-400"
                         : "bg-yellow-400 text-black hover:bg-yellow-500"
                       : darkMode
-                        ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                        : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                      ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                      : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                   }`}
                 >
                   {job.saved ? "★ Unsave" : "☆ Save"}
                 </button>
 
                 <button
-                  onClick={() => onApplyStatusChangeAction(job.id, !job.applied)}
+                  onClick={() =>
+                    onApplyStatusChangeAction(job.id, !job.applied)
+                  }
                   className={`px-2 py-1 rounded text-sm ${
                     job.applied
                       ? "bg-green-600 hover:bg-green-700 text-white"
@@ -227,7 +239,9 @@ const dashboardStats = {
               >
                 View Posting
               </a>
-              <p className="text-xs text-gray-400 mt-1">Posted on: {job.date}</p>
+              <p className="text-xs text-gray-400 mt-1">
+                Posted on: {job.date}
+              </p>
             </div>
           </div>
         ))}
@@ -264,7 +278,8 @@ const dashboardStats = {
           >
             <h2 className="text-xl font-semibold mb-4">Did you apply?</h2>
             <p className="text-sm mb-6">
-              You clicked “Apply” on a job but didn’t confirm. Would you like to mark it as applied now?
+              You clicked “Apply” on a job but didn’t confirm. Would you like to
+              mark it as applied now?
             </p>
             <div className="flex justify-end gap-3">
               <button
@@ -283,10 +298,8 @@ const dashboardStats = {
           </div>
         </div>
       )}
-
     </>
   );
 };
 
 export default JobTrackerTab;
-

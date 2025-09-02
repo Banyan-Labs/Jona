@@ -1,18 +1,19 @@
-
-import { getUserServer } from '@/supabase/user';
-import AppShell from '@/components/AppShell'; // or Dashboard if directly
-import type { AuthUser } from '@/types/application';
-import { redirect } from "next/navigation";
+import { getUserServer } from '@/lib/supabase/user'
+import { redirect } from 'next/navigation'
 
 export default async function Page() {
-  const user = await getUserServer();
-   if (!user) {
-    redirect("/login");
-   }
-return (
-  // <AppShell initialUser={user as AuthUser | null}>
+  const user = await getUserServer()
+  
+  if (!user) {
+    redirect('/login')
+  }
 
-    <div />
-  // </AppShell>
-);
+  // Redirect based on role
+  const role = user.user_metadata?.role || user.app_metadata?.role
+  
+  if (role === 'admin') {
+    redirect('/admin/dashboard')
+  } else {
+    redirect('/dashboard')
+  }
 }

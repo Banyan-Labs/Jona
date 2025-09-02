@@ -1,73 +1,121 @@
-
 // app/api/admin/jobs/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { AdminService } from "@/app/services/admin";
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
-
-export async function GET(request: NextRequest, { params }: Params) {
+import { logAdminAction } from "@/app/services/admin/admin-log-service";
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { data, error } = await supabase
-      .from('jobs')
-      .select('*')
-      .eq('id', params.id)
-      .single();
+    const supabase = createServerActionClient({ cookies });
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-    if (error) {
-      throw error;
+    if (error || !user || user.user_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!data) {
+    const job = await AdminService.getJobById(params.id);
+
+    if (!job) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json(job);
   } catch (error) {
-    console.error('Error fetching job:', error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("Error fetching job:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
-export async function PUT(request: NextRequest, { params }: Params) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
+    const supabase = createServerActionClient({ cookies });
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user || user.user_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const updates = await request.json();
+    const oldJob = await AdminService.getJobById(params.id);
 
-    const { data, error } = await supabase
-      .from('jobs')
-      .update(updates)
-      .eq('id', params.id)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
+    const job = await AdminService.updateJob(params.id, updates);
+    if (!job) {
+      return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
+    type Job = {
+      [key: string]: unknown;
+    };
 
-    return NextResponse.json(data, { status: 200 });
+    await logAdminAction(
+      user.id,
+      user.email || "",
+      "job_updated",
+      "job",
+      job.id,
+      updates,
+      oldJob ? { ...oldJob } : null
+    );
+
+    return NextResponse.json(job);
   } catch (error) {
-    console.error('Error updating job:', error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("Error updating job:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: Params) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { error } = await supabase
-      .from('jobs')
-      .delete()
-      .eq('id', params.id);
+    const supabase = createServerActionClient({ cookies });
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-    if (error) {
-      throw error;
+    if (error || !user || user.user_metadata?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    const oldJob = await AdminService.getJobById(params.id);
+    await AdminService.deleteJob(params.id);
+
+    await logAdminAction(
+      user.id,
+      user.email || "",
+      "job_deleted",
+      "job",
+      params.id,
+      null,
+      oldJob ? { ...oldJob } : null
+    );
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting job:', error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("Error deleting job:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

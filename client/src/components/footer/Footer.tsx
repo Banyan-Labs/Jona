@@ -1,10 +1,11 @@
-"use-client";
+"use client";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthUserContext";
 
-export default function Footer({
-  setCurrentPage,
-}: {
-  setCurrentPage: (page: string) => void;
-}) {
+export default function Footer() {
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
+
   return (
     <footer
       style={{
@@ -25,39 +26,39 @@ export default function Footer({
               © 2025 JobTracker. All rights reserved.
             </p>
           </div>
-
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wide mb-4">
               Quick Links
             </h4>
             <ul className="space-y-2">
+              {isAuthenticated && (
+                <li>
+                  <Link
+                    href="/profile"
+                    className="text-gray-300 hover:text-white transition-colors"
+                  >
+                    Profile Page
+                  </Link>
+                </li>
+              )}
               <li>
-                <button
-                  onClick={() => setCurrentPage("home")}
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Home
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setCurrentPage("about")}
+                <Link
+                  href="/about"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
                   About
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => setCurrentPage("contact")}
+                <Link
+                  href="/contact"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
                   Contact
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
-
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wide mb-4">
               Support

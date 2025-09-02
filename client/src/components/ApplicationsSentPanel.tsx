@@ -1,52 +1,30 @@
-"use client";
+// This shows how to fix the ApplicationsSentPanel component
+// You need to pass the userId to useApplicationTracker
+"use client"
 
-import React from "react";
+import React from 'react';
+import { useApplicationTracker } from '@/hooks/useApplicationTracker';
+import type { AuthUser } from '@/types/index';
+import { ApplicationsSentPanelProps } from '@/types/application';
 
-import { useApplicationTracker } from "../hooks/useApplicationTracker"
 
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+export default function ApplicationsSentPanel({ jobs, user, darkMode }: ApplicationsSentPanelProps) {
+  // Handle the case where user might be null
+  if (!user?.id) {
+    return (
+      <div className="p-4 text-center">
+        <p>Please log in to view your applications.</p>
+      </div>
+    );
+  }
 
-dayjs.extend(relativeTime);
-
-const ApplicationsSentPanel: React.FC = () => {
-  const { submittedJobs } = useApplicationTracker();
-
+  // Now TypeScript knows user is not null
+  const applicationTrackerData = useApplicationTracker(user.id);
+  
+  // Rest of your component logic
   return (
-    <div className="p-6 border rounded bg-white shadow">
-      <h2 className="text-xl font-semibold mb-4">Applications Sent</h2>
-
-      {submittedJobs.length === 0 ? (
-        <p className="text-gray-500">No applications sent in this session.</p>
-      ) : (
-        <ul className="space-y-3">
-          {submittedJobs.map((job) => (
-            <li key={job.id} className="p-4 border rounded">
-              <h3 className="font-semibold text-blue-700">
-                {job.title} @ {job.company}
-              </h3>
-
-              <p className="text-sm text-gray-600">
-                Submitted {dayjs(job.sentAt).fromNow()}
-              </p>
-
-              {job.submittedTo && (
-                <p className="text-sm text-gray-500">
-                  Role Targeted: {job.submittedTo.join(", ")}
-                </p>
-              )}
-
-              {job.resumeLength !== undefined && (
-                <p className="text-sm text-gray-500">
-                  Resume Length: {job.resumeLength} characters
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="applications-sent-panel">
+      {/* Your existing JSX */}
     </div>
   );
-};
-
-export default ApplicationsSentPanel;
+}

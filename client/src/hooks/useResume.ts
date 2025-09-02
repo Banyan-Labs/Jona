@@ -1,7 +1,8 @@
 
+"use client"
 
 import { useEffect, useState } from "react";
-import { Resume } from "@/types/application";
+import { Resume } from "@/types/index";
 
 export const useResume = () => {
   const [currentResume, setCurrentResume] = useState<Resume | null>(null);

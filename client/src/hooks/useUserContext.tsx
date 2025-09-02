@@ -1,21 +1,20 @@
-import { useContext } from "react";
-import { AuthUserContext } from "../context/AuthUserContext";
+// client\src\hooks\useUserContext.tsx
+'use client'
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
-// export const useUserContext = () => {
-//   const context = useContext(AuthUserContext);
-//   if (!context) {
-//     throw new Error("useUserContext must be used within an AuthUserProvider");
-//   }
-//   return context;
-
-// }
 export const useUserContext = () => {
-  const context = useContext(AuthUserContext);
-  if (!context) throw new Error("useUserContext must be used within an AuthUserProvider");
+  const [authUser, setAuthUser] = useState<{ id: string | null }>({ id: null });
 
-  const { user, setUser, setCurrentPageAction } = context;
-  const isAdmin = user?.user_metadata?.role === "admin";
-  const isAuthenticated = !!user;
+  useEffect(() => {
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const user = data?.session?.user;
+      setAuthUser({ id: user?.id ?? null });
+    };
 
-  return { user, setUser, setCurrentPageAction, isAdmin, isAuthenticated };
+    getSession();
+  }, []);
+
+  return authUser;
 };

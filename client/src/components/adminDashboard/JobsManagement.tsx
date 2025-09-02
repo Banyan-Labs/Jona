@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback,useMemo } from "react";
 import {
   Search,
   Filter,
@@ -14,12 +14,15 @@ import {
   Calendar,
   DollarSign,
 } from "lucide-react";
-import { AuthUser } from "@/types/application";
-import { AdminService } from "@/utils/admin-jobs";
-import { JobService } from "@/utils/supabase-jobs";
-import { AdminJob } from "@/types/admin_application";
+import { AuthUser,UserJobStatus } from "@/types/index"
 
-import { UserJobStatus } from "@/types/application";
+
+// import { JobService } from "@/utils/job-service";
+import { getAllJobs,deleteJob,exportJobsToCSV} from "@/app/services/admin/jobs";
+import {bulkDeleteJobs} from "@/app/services/admin/bulk";
+
+import { AdminJob } from "@/types/admin";
+import { useUserJobStatus } from "@/hooks/useUserJobStatus";
 interface JobManagementProps {
   user: AuthUser;
   onStatsUpdate: () => void;
@@ -83,6 +86,7 @@ export const JobManagement: React.FC<JobManagementProps> = ({
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+const { statusMap, loading: statusLoading } = useUserJobStatus();
 
   const itemsPerPage = 20;
 
@@ -102,27 +106,55 @@ export const JobManagement: React.FC<JobManagementProps> = ({
     site: job.site ?? undefined,
   });
 
+  
   const fetchJobs = useCallback(async () => {
-    setLoading(true);
-    try {
-      const jobsData = await AdminService.getAllJobs({
-        search: searchTerm || undefined,
-        status: filterStatus === "all" ? undefined : filterStatus,
-        limit: itemsPerPage,
-        offset: (currentPage - 1) * itemsPerPage,
-      });
+  setLoading(true);
+  try {
+    const jobsData = await getAllJobs({
+      search: searchTerm || undefined,
+      status: filterStatus === "all" ? undefined : filterStatus,
+      limit: itemsPerPage,
+      offset: (currentPage - 1) * itemsPerPage,
+    });
 
-      const transformedJobs = jobsData.map(transformAdminJob);
-      setJobs(transformedJobs);
+    const transformedJobs = jobsData.map(transformAdminJob);
+const enrichedJobs = transformedJobs.map((job) => {
+// const enrichedJobs = jobs.map((job) => {
+  const status = statusMap.get(job.id) ?? {};
+  return {
+    ...job,
+    ...status,
+  };
+});
+    // Enrich with user-specific status
+    // const enrichedJobs = transformedJobs.map((job) => {
+    //   const status = statusMap.get(job.id) ?? {};
+    //   return {
+    //     ...job,
+    //     ...status, // includes fields like `status`, `match_score`, etc.
+    //   };
+    // });
 
-      const allJobs = await AdminService.getAllJobs();
-      setTotalPages(Math.ceil(allJobs.length / itemsPerPage));
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, searchTerm, filterStatus]);
+    setJobs(enrichedJobs);
+
+    const allJobs = await getAllJobs();
+    setTotalPages(Math.ceil(allJobs.length / itemsPerPage));
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+  } finally {
+    setLoading(false);
+  }
+}, [currentPage, searchTerm, filterStatus, statusMap]);
+
+const enrichedJobs = useMemo(() => {
+  return jobs.map((job) => {
+    const status = statusMap.get(job.id) ?? {};
+    return {
+      ...job,
+      ...status,
+    };
+  });
+}, [jobs, statusMap]);
 
   useEffect(() => {
     fetchJobs();
@@ -139,7 +171,7 @@ export const JobManagement: React.FC<JobManagementProps> = ({
     if (!confirm("Are you sure you want to delete this job?")) return;
 
     try {
-      await AdminService.deleteJob(jobId);
+      await deleteJob(jobId);
       setJobs(jobs.filter((job) => job.id !== jobId));
       setSelectedJobs(selectedJobs.filter((id) => id !== jobId));
       onStatsUpdate();
@@ -156,7 +188,7 @@ export const JobManagement: React.FC<JobManagementProps> = ({
       return;
 
     try {
-      await AdminService.bulkDeleteJobs(selectedJobs);
+      await bulkDeleteJobs(selectedJobs);
       setJobs(jobs.filter((job) => !selectedJobs.includes(job.id)));
       setSelectedJobs([]);
       onStatsUpdate();
@@ -167,7 +199,7 @@ export const JobManagement: React.FC<JobManagementProps> = ({
 
   const handleExportJobs = async () => {
     try {
-      const csvContent = await AdminService.exportJobsToCSV();
+      const csvContent = await exportJobsToCSV();
       const blob = new Blob([csvContent], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -195,10 +227,6 @@ export const JobManagement: React.FC<JobManagementProps> = ({
     return new Date(dateString).toLocaleDateString();
   };
 
-  //   const formatSalary = (salary?: string) => {
-  //     if (!salary) return "Not specified";
-  //     return salary;
-  //   };
   const formatSalary = (salary?: number): string => {
     if (salary == null) return "N/A";
     return `$${salary.toLocaleString()}`;
