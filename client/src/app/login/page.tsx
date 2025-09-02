@@ -1,30 +1,59 @@
-"use client";
+// client/src/app/login/page.tsx
+'use client'
 
-import { useState } from "react";
-import AuthForm from "@/components/AuthForm";
-import { AuthUser } from "@/types/application"; // or define this in a shared types file if needed
+import { useState, useEffect } from "react"
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthUserContext'
+import AuthForm from "@/components/AuthForm"
+import type { AuthUser } from "@/types"
 
-export default function LoginPageWrapper() {
-  const [currentPage, setCurrentPage] = useState<"login" | "register" | "dashboard">("login");
+export default function LoginPage() {
+  const router = useRouter()
+  const { authUser, isAuthenticated, isAdmin, loading } = useAuth()
+  const [currentPage, setCurrentPage] = useState<"login" | "register">("login")
 
-  // Match expected AuthUser type from AuthForm
-  const handleSuccess = (user: AuthUser) => {
-    console.log("User logged in:", user);
-    setCurrentPage("dashboard");
-  };
+  // Redirect authenticated users
+  useEffect(() => {
+    if (loading) return
 
-  // Wrap the setter in a function to match `(page: string) => void`
+    if (isAuthenticated && authUser) {
+      const targetPath = isAdmin ? '/admin/dashboard' : '/dashboard'
+      router.push(targetPath)
+    }
+  }, [isAuthenticated, isAdmin, authUser, loading, router])
+
+  // Show loading spinner
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  // Prevent rendering if already authenticated
+  if (isAuthenticated) {
+    return null
+  }
+
+  const handleSuccess = (user?: AuthUser) => {
+    if (user) {
+      console.log("Login successful:", user.email)
+      // Redirect handled by useEffect
+    }
+  }
+
   const handlePageChange = (page: string) => {
-    setCurrentPage(page as "login" | "register" | "dashboard");
-  };
+    setCurrentPage(page as "login" | "register")
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <AuthForm
-        mode={currentPage === "register" ? "register" : "login"}
+        mode={currentPage}
         onSuccessAction={handleSuccess}
-        setCurrentPageAction={handlePageChange}
+        // setCurrentPageAction={handlePageChange}
       />
     </div>
-  );
+  )
 }

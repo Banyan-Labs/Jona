@@ -1,56 +1,110 @@
-"use-client"
-import { useUserContext } from "@/hooks/useUserContext";
-import type { JobStatusPayload } from "@/types/application";
+
+"use client";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthUserContext";
+import type { UserJobStatus } from "@/types/index";
 import { supabase } from "@/lib/supabaseClient";
+import type { JobStatusPayload } from "@/types/index";
+
+export const useUserJobStatus = () => {
+  const { authUser, accessToken } = useAuth();
+  const [statusMap, setStatusMap] = useState<Map<string, UserJobStatus>>(new Map());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      if (!authUser?.id || !accessToken) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        if (!session.session) {
+          console.error("No valid session found");
+          setLoading(false);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("user_job_status")
+          .select("*")
+          .eq("user_id", authUser.id);
+
+        if (error) {
+          console.error("Error fetching job status:", error.message);
+          return;
+        }
+
+        const map = new Map<string, UserJobStatus>();
+        data?.forEach((status) => {
+          map.set(status.job_id, status);
+        });
+        setStatusMap(map);
+      } catch (error) {
+        console.error("Failed to fetch job statuses:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatus();
+  }, [authUser?.id, accessToken]);
+
+  return { statusMap, loading };
+};
+
 export const useJobStatusWriter = () => {
-  const { user } = useUserContext();
+  const { authUser, accessToken } = useAuth();
 
   const upsertStatus = async (payload: JobStatusPayload) => {
-    if (!user?.id) return;
+    if (!authUser?.id || !accessToken) {
+      console.error("No authenticated user or access token");
+      return;
+    }
 
-    const { error } = await supabase
-      .from("user_job_status")
-      .upsert([{ ...payload, user_id: user.id }]);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        console.error("No valid session found");
+        return;
+      }
 
-    if (error) {
-      console.error("❌ Error writing job status:", error.message);
+      // Prepare the payload without created_at if it doesn't exist in schema
+      const cleanPayload = {
+        user_id: authUser.id,
+        job_id: payload.job_id,
+        status: payload.status,
+        applied: payload.applied,
+        saved: payload.saved,
+        updated_at: new Date().toISOString(),
+      };
+
+      // Remove undefined values
+      Object.keys(cleanPayload).forEach(key => {
+        if (cleanPayload[key as keyof typeof cleanPayload] === undefined) {
+          delete cleanPayload[key as keyof typeof cleanPayload];
+        }
+      });
+
+      const { error } = await supabase
+        .from("user_job_status")
+        .upsert([cleanPayload], { 
+          onConflict: "user_id,job_id",
+          ignoreDuplicates: false 
+        });
+
+      if (error) {
+        console.error("Error writing job status:", error.message);
+        throw error;
+      }
+
+      console.log("Job status updated successfully");
+    } catch (error) {
+      console.error("Failed to update job status:", error);
+      throw error;
     }
   };
 
   return { upsertStatus };
-};
-
-import { useEffect, useState } from "react";
-import type { UserJobStatus } from "@/types/application";
-
-export const useUserJobStatus = () => {
-  const { user } = useUserContext();
-  const [statusMap, setStatusMap] = useState<Map<string, UserJobStatus>>(new Map());
-
-  useEffect(() => {
-    const fetchStatus = async () => {
-      if (!user?.id) return;
-
-      const { data, error } = await supabase
-        .from("user_job_status")
-        .select("*")
-        .eq("user_id", user.id);
-
-      if (error) {
-        console.error("❌ Error fetching job status:", error.message);
-        return;
-      }
-
-      const map = new Map<string, UserJobStatus>();
-      data?.forEach((status) => {
-        map.set(status.job_id, status);
-      });
-
-      setStatusMap(map);
-    };
-
-    fetchStatus();
-  }, [user?.id]);
-
-  return statusMap;
 };

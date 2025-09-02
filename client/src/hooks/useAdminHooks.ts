@@ -1,11 +1,12 @@
+"use client"
 
 // hooks/useAdminData.ts
 import { useState, useEffect } from 'react';
-import type { DashboardStats, Job,  } from '@/types/application';
-import type { AdminUser } from '@/types/admin_application';
+import type { DashboardStatsProps, Job,  } from '@/types/index';
+import type { AdminUser } from '@/types/admin';
 
 export function useAdminData() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [stats, setStats] = useState<DashboardStatsProps | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);

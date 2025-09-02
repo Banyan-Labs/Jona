@@ -1,12 +1,9 @@
-
-"use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Play,
   Pause,
   RefreshCw,
   Settings,
-  Download,
   Eye,
   Clock,
   CheckCircle,
@@ -15,762 +12,723 @@ import {
   Calendar,
   MapPin,
   Search,
+  Loader2,
+  StopCircle,
+  Download,
+  Activity,
+  Zap
 } from "lucide-react";
-import {
-  ScraperRequest,
-  ScraperResponse,
-  ScrapingLog,
-AuthUser
-} from "@/types/application";
-import { AdminService} from "@/utils/admin-jobs";
 
-interface ScraperTabsProps {
-  user: AuthUser;
+// Mock user type - replace with your actual auth user type
+interface AuthUser {
+  id: string;
+  email?: string;
+  user_metadata?: {
+    role?: string;
+  };
 }
 
-const ScraperTabs: React.FC<ScraperTabsProps> = ({ user }) => {
-  const [activeTab, setActiveTab] = useState<"control" | "logs" | "analytics">(
-    "control"
-  );
+interface ScraperConfig {
+  location: string;
+  days: number;
+  keywords: string[];
+  sites: string[];
+  debug: boolean;
+  priority: "low" | "medium" | "high";
+}
+
+interface ScraperResponse {
+  scraper_name: string;
+  jobs_count: number;
+  status: string;
+  duration_seconds: number;
+  message: string;
+  success: boolean;
+  log_id?: string;
+  error?: string;
+}
+
+interface ScrapingLog {
+  id: string;
+  status: string;
+  jobs_found: number;
+  jobs_saved: number;
+  duration_seconds?: number;
+  started_at: string;
+  scraper_type?: string;
+  error_message?: string;
+}
+
+const ImprovedScraperDashboard: React.FC<{ user: AuthUser }> = ({ user }) => {
+  const [activeTab, setActiveTab] = useState<"control" | "logs" | "analytics">("control");
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState("");
-  const [logs, setLogs] = useState<ScrapingLog[]>([]);
-  const [currentLogId, setCurrentLogId] = useState<string | null>(null);
-const [config, setConfig] = useState<ScraperRequest>({
-  location: "remote",
-  days: 15,
-  keywords: ["software engineer", "web developer", "react", "javascript"],
-  sites: [
-    "indeed",
-    "careerbuilder",
-    "dice",
-    "teksystems",
-    "ziprecruiter",
-    "monster", // Optional: add more if needed
-  ],
-});
-
-  // Analytics data
-  const [analytics, setAnalytics] = useState({
+  const [currentOperation, setCurrentOperation] = useState<string>("");
+  const [scrapingLogs, setScrapingLogs] = useState<ScrapingLog[]>([]);
+  const [stats, setStats] = useState({
     totalSessions: 0,
-    successfulSessions: 0,
     totalJobsFound: 0,
     averageDuration: 0,
-    topKeywords: [] as { keyword: string; count: number }[],
-    sessionsByDay: [] as { date: string; sessions: number; jobs: number }[],
+    successRate: 0
+  });
+  
+  const outputRef = useRef<HTMLDivElement>(null);
+
+  const [config, setConfig] = useState<ScraperConfig>({
+    location: "remote",
+    days: 15,
+    keywords: ["software engineer", "web developer", "react", "javascript"],
+    sites: ["indeed", "careerbuilder", "dice", "teksystems", "ziprecruiter"],
+    debug: false,
+    priority: "medium"
   });
 
+  const [selectedScrapers, setSelectedScrapers] = useState<string[]>([
+    "indeed", "careerbuilder", "dice"
+  ]);
+
+  // Auto scroll to bottom of output
   useEffect(() => {
-    fetchLogs();
-    calculateAnalytics();
+    if (outputRef.current) {
+      outputRef.current.scrollTop = outputRef.current.scrollHeight;
+    }
+  }, [output]);
+
+  // Load scraping logs and stats on mount
+  useEffect(() => {
+    loadScrapingLogs();
+    loadStats();
   }, []);
 
-  const fetchLogs = async () => {
-    try {
-      const logsData = await AdminService.getScrapingLogs(100);
-      setLogs(logsData);
-    } catch (error) {
-      console.error("Error fetching logs:", error);
-    }
+  const addToOutput = (message: string) => {
+    const timestamp = new Date().toLocaleTimeString();
+    setOutput(prev => prev + `[${timestamp}] ${message}\n`);
   };
 
-  const calculateAnalytics = async () => {
+  const loadScrapingLogs = async () => {
     try {
-      const logsData = await AdminService.getScrapingLogs(1000);
-
-      const totalSessions = logsData.length;
-      const successfulSessions = logsData.filter(
-        (log: ScrapingLog) => log.status === "completed"
-      ).length;
-      const totalJobsFound = logsData.reduce(
-        (sum: number, log: ScrapingLog) => sum + (log.jobs_found || 0),
-        0
-      );
-      const completedSessions = logsData.filter(
-        (log: ScrapingLog) => log.duration_seconds
-      );
-      const averageDuration =
-        completedSessions.length > 0
-          ? Math.round(
-              completedSessions.reduce(
-                (sum: number, log: ScrapingLog) =>
-                  sum + (log.duration_seconds || 0),
-                0
-              ) / completedSessions.length
-            )
-          : 0;
-
-      // Calculate top keywords
-      const keywordCounts: Record<string, number> = {};
-      logsData.forEach((log: ScrapingLog) => {
-        if (Array.isArray(log.keywords_used)) {
-          log.keywords_used.forEach((keyword: string) => {
-            keywordCounts[keyword] = (keywordCounts[keyword] || 0) + 1;
-          });
+      const response = await fetch('/api/scrapers/logs', {
+        headers: {
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`
         }
       });
-
-      const topKeywords = Object.entries(keywordCounts)
-        .map(([keyword, count]) => ({ keyword, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10);
-
-      // Calculate sessions by day (last 30 days)
-      const last30Days = Array.from({ length: 30 }, (_, i) => {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        return date.toISOString().split("T")[0];
-      }).reverse();
-
-      const sessionsByDay = last30Days.map((date) => {
-        const dayLogs = logsData.filter((log: ScrapingLog) =>
-          log.started_at?.startsWith(date)
-        );
-        return {
-          date,
-          sessions: dayLogs.length,
-          jobs: dayLogs.reduce(
-            (sum: number, log: ScrapingLog) => sum + (log.jobs_found || 0),
-            0
-          ),
-        };
-      });
-
-      setAnalytics({
-        totalSessions,
-        successfulSessions,
-        totalJobsFound,
-        averageDuration,
-        topKeywords,
-        sessionsByDay,
-      });
+      
+      if (response.ok) {
+        const logs = await response.json();
+        setScrapingLogs(logs.slice(0, 20)); // Get latest 20 logs
+      }
     } catch (error) {
-      console.error("Error calculating analytics:", error);
+      console.error('Failed to load scraping logs:', error);
     }
   };
-  const runScraper = async () => {
- if (isRunning) return;
 
-  if (!Array.isArray(config.sites)) {
-    setOutput((prev) => prev + `⚠️ Invalid sites config\n`);
-    return;
-  }
+  const loadStats = async () => {
+    try {
+      const response = await fetch('/api/scrapers/stats', {
+        headers: {
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`
+        }
+      });
+      
+      if (response.ok) {
+        const statsData = await response.json();
+        setStats(statsData);
+      }
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  };
 
+  const runIndividualScraper = async (scraperName: string) => {
+    setIsRunning(true);
+    setCurrentOperation(`Running ${scraperName}`);
+    addToOutput(`🚀 Starting ${scraperName} scraper...`);
 
-
-  setIsRunning(true);
-  setOutput("🚀 Starting scraper...\n");
-  setCurrentLogId(null);
-
-  try {
-    for (const site of config.sites) {
-      const response = await fetch(`/api/scrape/${site}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...config, user_id: user?.id }),
+    try {
+      const response = await fetch(`/api/scrapers/${scraperName}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify(config)
       });
 
-      const data: ScraperResponse = await response.json();
+      const result: ScraperResponse = await response.json();
 
-      if (data.success) {
-        setOutput((prev) => prev + `✅ ${site} scraper completed\n`);
-        setOutput((prev) => prev + `📊 Found ${data.jobs_found || 0} jobs\n`);
-        setOutput((prev) => prev + `${data.output || ""}\n`);
-        setCurrentLogId(data.log_id || null);
+      if (result.success) {
+        addToOutput(`✅ ${scraperName} completed: Found ${result.jobs_count} jobs (${formatDuration(result.duration_seconds)})`);
       } else {
-        setOutput((prev) => prev + `❌ ${site} scraper failed: ${data.error}\n`);
+        addToOutput(`❌ ${scraperName} failed: ${result.message || result.error}`);
+      }
+
+      loadScrapingLogs(); // Refresh logs
+      loadStats(); // Refresh stats
+
+    } catch (error) {
+      addToOutput(`❌ ${scraperName} failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsRunning(false);
+      setCurrentOperation("");
+    }
+  };
+
+  const runSelectedScrapers = async () => {
+    if (isRunning || selectedScrapers.length === 0) return;
+
+    setIsRunning(true);
+    setOutput("");
+    addToOutput("🚀 Starting selected scrapers...");
+
+    for (const scraperName of selectedScrapers) {
+      await runIndividualScraper(scraperName);
+      
+      // Small delay between scrapers
+      if (selectedScrapers.indexOf(scraperName) < selectedScrapers.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
     }
 
-    await fetchLogs();
-    await calculateAnalytics();
-  } catch (error) {
-    setOutput((prev) => prev + `💥 Error running scraper: ${error}\n`);
-  } finally {
+    addToOutput("🎉 All selected scrapers completed!");
     setIsRunning(false);
-  }
-};
-  const stopScraper = () => {
-    // In a real implementation, you would send a stop signal to the backend
+  };
+
+  const runAllScrapers = async () => {
+    if (isRunning) return;
+
+    setIsRunning(true);
+    setOutput("");
+    addToOutput("🚀 Starting ALL scrapers with full pipeline...");
+
+    try {
+      const response = await fetch('/api/scrapers/all', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({
+          ...config,
+          secret: process.env.NEXT_PUBLIC_SCRAPER_SECRET_TOKEN
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'completed' || result.status === 'partial_failure') {
+        addToOutput(`✅ All scrapers completed!`);
+        addToOutput(`📊 Total jobs: ${result.total_jobs}`);
+        addToOutput(`🕐 Duration: ${formatDuration(result.duration_seconds)}`);
+        addToOutput(`📈 Success rate: ${result.success_rate}%`);
+        
+        Object.entries(result.individual_results).forEach(([scraper, count]) => {
+          const displayName = getScraperDisplayName(scraper);
+          addToOutput(`  • ${displayName}: ${count} jobs`);
+        });
+      } else {
+        addToOutput(`❌ All scrapers failed: ${result.message}`);
+      }
+
+      loadScrapingLogs();
+      loadStats();
+
+    } catch (error) {
+      addToOutput(`❌ All scrapers failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
+  const stopScraping = () => {
     setIsRunning(false);
-    setOutput((prev) => prev + `⏹️ Scraper stopped by user\n`);
+    addToOutput("⏹️ Scraping stopped by user");
   };
 
   const clearOutput = () => {
     setOutput("");
   };
 
-  const downloadLogs = async () => {
+  const testConnection = async () => {
+    addToOutput("🔌 Testing connection to scraper service...");
+    
     try {
-      const logsData = await AdminService.getScrapingLogs(1000);
-      const csv = [
-        [
-          "ID",
-          "Status",
-          "Jobs Found",
-          "Duration (s)",
-          "Started At",
-          "Keywords",
-          "Sites",
-          "Error",
-        ].join(","),
-        ...logsData.map((log: ScrapingLog) =>
-          [
-            log.id,
-            log.status,
-            log.jobs_found || 0,
-            log.duration_seconds || 0,
-            log.started_at || "",
-            Array.isArray(log.keywords_used) ? log.keywords_used.join(";") : "",
-            Array.isArray(log.sites_scraped) ? log.sites_scraped.join(";") : "",
-            log.error_message || "",
-          ]
-            .map((field) => `"${field}"`)
-            .join(",")
-        ),
-      ].join("\n");
-
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `scraping-logs-${
-        new Date().toISOString().split("T")[0]
-      }.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const response = await fetch('/api/scrapers/status');
+      
+      if (response.ok) {
+        const status = await response.json();
+        addToOutput(`✅ Connection successful`);
+        addToOutput(`📊 Available scrapers: ${status.available_scrapers?.join(', ') || 'Unknown'}`);
+        addToOutput(`🏃 Running scrapers: ${status.running_scrapers || 0}`);
+      } else {
+        addToOutput(`❌ Connection failed: HTTP ${response.status}`);
+      }
     } catch (error) {
-      console.error("Error downloading logs:", error);
+      addToOutput(`❌ Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
+  const handleScraperToggle = (scraperName: string) => {
+    setSelectedScrapers(prev => 
+      prev.includes(scraperName) 
+        ? prev.filter(s => s !== scraperName)
+        : [...prev, scraperName]
+    );
+  };
+
+  const formatDuration = (seconds: number): string => {
+    if (seconds < 60) return `${seconds.toFixed(1)}s`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${(seconds % 60).toFixed(0)}s`;
+    return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+  };
+
+  const getScraperDisplayName = (scraperName: string): string => {
+    const nameMap: Record<string, string> = {
+      indeed: "Indeed",
+      careerbuilder: "CareerBuilder",
+      dice: "Dice",
+      ziprecruiter: "ZipRecruiter",
+      teksystems: "TekSystems",
+    };
+    return nameMap[scraperName] || scraperName;
+  };
+
+  const getStatusColor = (status: string): string => {
+    switch (status.toLowerCase()) {
       case "completed":
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case "failed":
-        return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      case "success":
+        return "text-green-600";
       case "running":
-        return <RefreshCw className="w-4 h-4 text-blue-500 animate-spin" />;
+      case "in-progress":
+        return "text-blue-600";
+      case "failed":
+      case "error":
+        return "text-red-600";
+      case "pending":
+      case "waiting":
+        return "text-yellow-600";
       default:
-        return <Clock className="w-4 h-4 text-yellow-500" />;
+        return "text-gray-600";
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "failed":
-        return "bg-red-100 text-red-800";
-      case "running":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-yellow-100 text-yellow-800";
-    }
-  };
+  const availableScrapers = [
+    { id: 'indeed', name: 'Indeed', description: 'Large job board with comprehensive listings' },
+    { id: 'careerbuilder', name: 'CareerBuilder', description: 'Professional networking and job search' },
+    { id: 'dice', name: 'Dice', description: 'Tech-focused job board' },
+    { id: 'ziprecruiter', name: 'ZipRecruiter', description: 'AI-powered job matching' },
+    { id: 'teksystems', name: 'TekSystems', description: 'IT staffing and consulting' },
+  ];
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-6 rounded-xl shadow-lg">
-        <h1 className="text-3xl font-bold mb-2">Job Scraper Control Center</h1>
-        <p className="text-blue-100">
-          Automate job discovery across multiple platforms
-        </p>
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Job Scraper Control Panel</h2>
+        <p className="text-gray-600">Manage and monitor job scraping operations</p>
+        <div className="flex items-center mt-2 text-sm text-gray-500">
+          <Activity className="w-4 h-4 mr-1" />
+          Admin: {user.email}
+        </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="flex items-center">
-            <BarChart3 className="w-8 h-8 text-blue-500 mr-3" />
+      {/* Quick Stats Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-2xl font-bold text-gray-900">
-                {analytics.totalSessions}
-              </p>
-              <p className="text-sm text-gray-600">Total Sessions</p>
+              <p className="text-sm font-medium text-blue-600">Total Sessions</p>
+              <p className="text-2xl font-bold text-blue-900">{stats.totalSessions}</p>
             </div>
+            <BarChart3 className="w-8 h-8 text-blue-500" />
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="flex items-center">
-            <CheckCircle className="w-8 h-8 text-green-500 mr-3" />
+
+        <div className="bg-green-50 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-2xl font-bold text-gray-900">
-                {analytics.successfulSessions}
-              </p>
-              <p className="text-sm text-gray-600">Successful</p>
+              <p className="text-sm font-medium text-green-600">Jobs Found</p>
+              <p className="text-2xl font-bold text-green-900">{stats.totalJobsFound}</p>
             </div>
+            <CheckCircle className="w-8 h-8 text-green-500" />
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="flex items-center">
-            <Search className="w-8 h-8 text-purple-500 mr-3" />
+
+        <div className="bg-yellow-50 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-2xl font-bold text-gray-900">
-                {analytics.totalJobsFound}
-              </p>
-              <p className="text-sm text-gray-600">Jobs Found</p>
+              <p className="text-sm font-medium text-yellow-600">Avg Duration</p>
+              <p className="text-2xl font-bold text-yellow-900">{formatDuration(stats.averageDuration)}</p>
             </div>
+            <Clock className="w-8 h-8 text-yellow-500" />
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="flex items-center">
-            <Clock className="w-8 h-8 text-yellow-500 mr-3" />
+
+        <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-2xl font-bold text-gray-900">
-                {analytics.averageDuration}s
-              </p>
-              <p className="text-sm text-gray-600">Avg Duration</p>
+              <p className="text-sm font-medium text-purple-600">Success Rate</p>
+              <p className="text-2xl font-bold text-purple-900">{stats.successRate}%</p>
             </div>
+            <Zap className="w-8 h-8 text-purple-500" />
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6">
-            {[
-              { id: "control", label: "Control Panel", icon: Settings },
-              { id: "logs", label: "Logs", icon: Eye, count: logs.length },
-              { id: "analytics", label: "Analytics", icon: BarChart3 },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() =>
-                    setActiveTab(tab.id as "control" | "logs" | "analytics")
-                  }
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
-                    activeTab === tab.id
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {tab.label}
-                  {tab.count !== undefined && (
-                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
+      <div className="flex border-b border-gray-200 mb-6">
+        {[
+          { id: 'control', label: 'Control Panel', icon: Settings },
+          { id: 'logs', label: 'Logs & Output', icon: Eye },
+          { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+        ].map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id as any)}
+            className={`flex items-center px-6 py-3 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === id
+                ? 'border-blue-500 text-blue-600 bg-blue-50'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            <Icon className="w-4 h-4 mr-2" />
+            {label}
+          </button>
+        ))}
+      </div>
 
-        <div className="p-6">
-          {/* Control Panel Tab */}
-          {activeTab === "control" && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Configuration Panel */}
-              <div className="space-y-6">
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
-                    Scraper Configuration
-                  </h3>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <MapPin className="w-4 h-4 inline mr-1" />
-                        Location
-                      </label>
-                      <input
-                        type="text"
-                        value={config.location}
-                        onChange={(e) =>
-                          setConfig((prev) => ({
-                            ...prev,
-                            location: e.target.value,
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="e.g., remote, San Francisco, CA, New York"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <Calendar className="w-4 h-4 inline mr-1" />
-                        Days Back
-                      </label>
-                      <input
-                        type="number"
-                        value={config.days}
-                        onChange={(e) =>
-                          setConfig((prev) => ({
-                            ...prev,
-                            days: parseInt(e.target.value),
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        min="1"
-                        max="30"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Jobs posted within the last N days
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Keywords
-                      </label>
-                      <textarea
-                        value={config.keywords?.join(", ")}
-                        onChange={(e) =>
-                          setConfig((prev) => ({
-                            ...prev,
-                            keywords: e.target.value
-                              .split(",")
-                              .map((k) => k.trim())
-                              .filter((k) => k),
-                          }))
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows={3}
-                        placeholder="software engineer, developer, react, javascript, python"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Comma-separated list of job keywords
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Target Sites
-                      </label>
-                      <div className="space-y-2">
-                        {["indeed", "linkedin", "glassdoor", "dice"].map(
-                          (site) => (
-                            <label key={site} className="flex items-center">
-                              <input
-                                type="checkbox"
-                                checked={config.sites?.includes(site)}
-                                onChange={(e) => {
-                                  const sites = config.sites || [];
-                                  if (e.target.checked) {
-                                    setConfig((prev) => ({
-                                      ...prev,
-                                      sites: [...sites, site],
-                                    }));
-                                  } else {
-                                    setConfig((prev) => ({
-                                      ...prev,
-                                      sites: sites.filter(
-                                        (s: string) => s !== site
-                                      ),
-                                    }));
-                                  }
-                                }}
-                                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                              />
-                              <span className="capitalize font-medium">
-                                {site}
-                              </span>
-                            </label>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3 mt-6">
-                    <button
-                      onClick={runScraper}
-                      disabled={isRunning}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                    >
-                      {isRunning ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                          Running...
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4" />
-                          Start Scraping
-                        </>
-                      )}
-                    </button>
-
-                    {isRunning && (
-                      <button
-                        onClick={stopScraper}
-                        className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium"
-                      >
-                        <Pause className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Output Panel */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">Live Output</h3>
-                  <button
-                    onClick={clearOutput}
-                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-                  >
-                    Clear
-                  </button>
-                </div>
-
-                <div className="bg-gray-900 text-green-400 p-4 rounded-lg h-96 overflow-y-auto font-mono text-sm">
-                  <pre className="whitespace-pre-wrap">
-                    {output ||
-                      'No output yet. Click "Start Scraping" to begin.'}
-                  </pre>
-                  {isRunning && (
-                    <div className="flex items-center mt-2 text-blue-400">
-                      <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                      Scraper is running...
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Logs Tab */}
-          {activeTab === "logs" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Scraping History</h3>
-                <div className="flex gap-2">
-                  <button
-                    onClick={fetchLogs}
-                    className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    Refresh
-                  </button>
-                  <button
-                    onClick={downloadLogs}
-                    className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                  >
-                    <Download className="w-4 h-4" />
-                    Export CSV
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-white border rounded-lg overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Jobs Found
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Duration
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Keywords
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Sites
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Started At
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {logs.map((log) => (
-                        <tr key={log.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              {getStatusIcon(log.status)}
-                              <span
-                                className={`ml-2 px-2 py-1 text-xs rounded-full ${getStatusColor(
-                                  log.status
-                                )}`}
-                              >
-                                {log.status}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-                            {log.jobs_found || 0}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {log.duration_seconds
-                              ? `${log.duration_seconds}s`
-                              : "-"}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
-                            <div className="truncate">
-                              {Array.isArray(log.keywords_used)
-                                ? log.keywords_used.join(", ")
-                                : "-"}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {Array.isArray(log.sites_scraped)
-                              ? log.sites_scraped.join(", ")
-                              : "-"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {log.started_at
-                              ? new Date(log.started_at).toLocaleString()
-                              : "-"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Analytics Tab */}
-          {activeTab === "analytics" && (
+      {/* Control Panel Tab */}
+      {activeTab === 'control' && (
+        <div className="space-y-6">
+          {/* Configuration Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold">Scraping Analytics</h3>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Success Rate */}
-                <div className="bg-white border rounded-lg p-6">
-                  <h4 className="font-semibold mb-4">Success Rate</h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span>Successful Sessions</span>
-                      <span className="font-semibold text-green-600">
-                        {analytics.totalSessions > 0
-                          ? Math.round(
-                              (analytics.successfulSessions /
-                                analytics.totalSessions) *
-                                100
-                            )
-                          : 0}
-                        %
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-green-600 h-2 rounded-full"
-                        style={{
-                          width: `${
-                            analytics.totalSessions > 0
-                              ? (analytics.successfulSessions /
-                                  analytics.totalSessions) *
-                                100
-                              : 0
-                          }%`,
-                        }}
-                      ></div>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {analytics.successfulSessions} of{" "}
-                      {analytics.totalSessions} sessions successful
-                    </div>
+              <h3 className="text-lg font-semibold text-gray-800">Configuration</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Location
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="text"
+                      value={config.location}
+                      onChange={(e) => setConfig(prev => ({ ...prev, location: e.target.value }))}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="e.g., remote, New York, San Francisco"
+                    />
                   </div>
                 </div>
 
-                {/* Top Keywords */}
-                <div className="bg-white border rounded-lg p-6">
-                  <h4 className="font-semibold mb-4">Top Keywords</h4>
-                  <div className="space-y-2">
-                    {analytics.topKeywords.slice(0, 8).map((item) => (
-                      <div
-                        key={item.keyword}
-                        className="flex items-center justify-between"
-                      >
-                        <span className="text-sm">{item.keyword}</span>
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 bg-gray-200 rounded-full h-1.5">
-                            <div
-                              className="bg-blue-600 h-1.5 rounded-full"
-                              style={{
-                                width: `${
-                                  analytics.topKeywords.length > 0
-                                    ? (item.count /
-                                        analytics.topKeywords[0].count) *
-                                      100
-                                    : 0
-                                }%`,
-                              }}
-                            ></div>
-                          </div>
-                          <span className="text-xs text-gray-600 w-6 text-right">
-                            {item.count}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Days Back
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="number"
+                      value={config.days}
+                      onChange={(e) => setConfig(prev => ({ ...prev, days: parseInt(e.target.value) || 15 }))}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      min="1"
+                      max="30"
+                    />
                   </div>
+                </div>
 
-                  {/* ✅ Log ID Display */}
-                  {currentLogId && (
-                    <p className="text-xs text-gray-500 mt-4">
-                      Last Scraper Log ID: <code>{currentLogId}</code>
-                    </p>
-                  )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Keywords
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
+                    <textarea
+                      value={config.keywords.join(', ')}
+                      onChange={(e) => setConfig(prev => ({ 
+                        ...prev, 
+                        keywords: e.target.value.split(',').map(k => k.trim()).filter(k => k) 
+                      }))}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      rows={3}
+                      placeholder="software engineer, react, javascript, python"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Priority Level
+                  </label>
+                  <select
+                    value={config.priority}
+                    onChange={(e) => setConfig(prev => ({ ...prev, priority: e.target.value as any }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="debug"
+                    checked={config.debug}
+                    onChange={(e) => setConfig(prev => ({ ...prev, debug: e.target.checked }))}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="debug" className="ml-2 text-sm text-gray-700">
+                    Enable debug mode
+                  </label>
                 </div>
               </div>
             </div>
+
+            {/* Scraper Selection */}
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-gray-800">Select Scrapers</h3>
+              
+              <div className="space-y-4">
+                {availableScrapers.map((scraper) => (
+                  <div key={scraper.id} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      id={scraper.id}
+                      checked={selectedScrapers.includes(scraper.id)}
+                      onChange={() => handleScraperToggle(scraper.id)}
+                      className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <div className="flex-1">
+                      <label htmlFor={scraper.id} className="font-medium text-gray-900 cursor-pointer">
+                        {scraper.name}
+                      </label>
+                      <p className="text-sm text-gray-500 mt-1">{scraper.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-4 pt-6 border-t border-gray-200">
+            <button
+              onClick={runSelectedScrapers}
+              disabled={isRunning || selectedScrapers.length === 0}
+              className={`flex items-center px-6 py-3 rounded-md font-medium transition-colors ${
+                isRunning || selectedScrapers.length === 0
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+            >
+              {isRunning ? (
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              ) : (
+                <Play className="w-5 h-5 mr-2" />
+              )}
+              Run Selected ({selectedScrapers.length})
+            </button>
+
+            <button
+              onClick={runAllScrapers}
+              disabled={isRunning}
+              className={`flex items-center px-6 py-3 rounded-md font-medium transition-colors ${
+                isRunning
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+            >
+              {isRunning ? (
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-5 h-5 mr-2" />
+              )}
+              Run All + Pipeline
+            </button>
+
+            {isRunning && (
+              <button
+                onClick={stopScraping}
+                className="flex items-center px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium transition-colors"
+              >
+                <StopCircle className="w-5 h-5 mr-2" />
+                Stop
+              </button>
+            )}
+
+            <button
+              onClick={testConnection}
+              disabled={isRunning}
+              className="flex items-center px-6 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-700 font-medium transition-colors disabled:opacity-50"
+            >
+              <CheckCircle className="w-5 h-5 mr-2" />
+              Test Connection
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Logs Tab */}
+      {activeTab === 'logs' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-800">Real-time Output</h3>
+            <div className="flex gap-2">
+              {currentOperation && (
+                <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  {currentOperation}
+                </span>
+              )}
+              <button
+                onClick={clearOutput}
+                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 text-sm font-medium"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <div
+            ref={outputRef}
+            className="bg-gray-900 text-green-400 p-6 rounded-md font-mono text-sm h-96 overflow-y-auto whitespace-pre-wrap border-2 border-gray-700"
+          >
+            {output || "No output yet. Run a scraper to see results here."}
+          </div>
+
+          {isRunning && (
+            <div className="flex items-center text-blue-600 bg-blue-50 p-4 rounded-md">
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              <span className="font-medium">Scraping in progress...</span>
+              {currentOperation && <span className="ml-2 text-sm">({currentOperation})</span>}
+            </div>
           )}
 
-          {/* Activity Timeline */}
-          <div className="bg-white border rounded-lg p-6">
-            <h4 className="font-semibold mb-4">
-              Activity Timeline (Last 30 Days)
-            </h4>
-            <div className="h-64 flex items-end justify-between gap-1">
-              {analytics.sessionsByDay.map((day, index) => (
-                <div
-                  key={day.date}
-                  className="flex flex-col items-center flex-1"
-                >
-                  <div
-                    className="bg-blue-600 rounded-t w-full min-h-1"
-                    style={{
-                      height: `${Math.max(
-                        (day.sessions /
-                          Math.max(
-                            ...analytics.sessionsByDay.map((d) => d.sessions),
-                            1
-                          )) *
-                          200,
-                        4
-                      )}px`,
-                    }}
-                    title={`${day.date}: ${day.sessions} sessions, ${day.jobs} jobs`}
-                  ></div>
-                  {index % 5 === 0 && (
-                    <span className="text-xs text-gray-500 mt-1 transform -rotate-45 origin-left">
-                      {new Date(day.date).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
-                  )}
-                </div>
-              ))}
+          {/* Recent Logs Table */}
+          <div className="mt-8">
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">Recent Scraping Sessions</h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Scraper
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Jobs Found
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Duration
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {scrapingLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {new Date(log.started_at).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {getScraperDisplayName(log.scraper_type || 'unknown')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(log.status)}`}>
+                          {log.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {log.jobs_found}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {log.duration_seconds ? formatDuration(log.duration_seconds) : '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Analytics Tab */}
+      {activeTab === 'analytics' && (
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-gray-800">Scraping Analytics</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-blue-600">Total Sessions</p>
+                  <p className="text-3xl font-bold text-blue-900">{stats.totalSessions}</p>
+                  <p className="text-sm text-blue-700 mt-1">All time</p>
+                </div>
+                <BarChart3 className="w-12 h-12 text-blue-500" />
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-green-600">Jobs Found</p>
+                  <p className="text-3xl font-bold text-green-900">{stats.totalJobsFound}</p>
+                  <p className="text-sm text-green-700 mt-1">Total scraped</p>
+                </div>
+                <CheckCircle className="w-12 h-12 text-green-500" />
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 p-6 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-yellow-600">Avg Duration</p>
+                  <p className="text-3xl font-bold text-yellow-900">{formatDuration(stats.averageDuration)}</p>
+                  <p className="text-sm text-yellow-700 mt-1">Per session</p>
+                </div>
+                <Clock className="w-12 h-12 text-yellow-500" />
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center text-gray-500 py-12">
+            <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+            <p className="text-lg font-medium">Advanced analytics coming soon</p>
+            <p className="text-sm">Charts, trends, and detailed performance metrics</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default ScraperTabs;
+export default ImprovedScraperDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

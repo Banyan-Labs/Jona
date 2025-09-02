@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Trash2, 
+import React, { useState, useEffect } from "react";
+import {
+  Search,
+  Filter,
+  Download,
+  Trash2,
   Eye,
   Edit,
   RefreshCw,
@@ -15,79 +15,43 @@ import {
   User,
   MapPin,
   Crown,
-  Users
-} from 'lucide-react';
-import { AdminUser} from '@/types/admin_application';
-import { AdminService } from '@/utils/admin-jobs';
-import { AuthUser} from '@/types/application';
+  Users,
+} from "lucide-react";
+import { AdminUser } from "@/types/admin";
+// import { UserService } from '@/app/services/admin/users';
+import { AuthUser } from "@/types";
+import {
+  getUsers,
+  getUser,
+  getUserById,
+  getAllUsers,
+  updateUser,
+  deleteUser,
+  getAdminEnhancedUserProfile,
+  // getAdminBaseURL,
+} from "@/app/services/admin/users";
 
 interface UserManagementProps {
   user: AuthUser;
   onStatsUpdate: () => void;
 }
-type FilterStatus = 'all' | 'active' | 'inactive'; 
+type FilterStatus = "all" | "active" | "inactive";
 
-export const UserManagement: React.FC<UserManagementProps> = ({ user: user, onStatsUpdate }) => {
+export const UserManagement: React.FC<UserManagementProps> = ({
+  user: user,
+  onStatsUpdate,
+}) => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-//   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  //   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
- const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
-
-
-
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const usersData = await AdminService.getAllUsers();
-      setUsers(usersData);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-useEffect(() => {
-  console.log(`Admin ${user.email} accessed UserManagement`);
-}, [user]);
-
-
-  const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
-    
-    try {
-      await AdminService.deleteUser(userId);
-      setUsers(users.filter(u => u.id !== userId));
-      setSelectedUsers(selectedUsers.filter(id => id !== userId));
-      onStatsUpdate();
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      alert('Failed to delete user. They may have associated data that needs to be removed first.');
-    }
-  };
-
-  const handleExportUsers = async () => {
-    try {
-      const csvContent = await AdminService.exportUsersToCSV();
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `users-export-${new Date().toISOString().split('T')[0]}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error exporting users:', error);
-    }
-  };
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+  const [error, setError] = useState<string | null>(null);
+  const page = 1;
+  const search = "";
+  const status = "all";
 
   const handleSelectAll = () => {
     if (selectedUsers.length === filteredUsers.length) {
@@ -113,24 +77,94 @@ useEffect(() => {
     );
   };
 
-  const getSubscriptionBadge = (subscriptionType?: string) => {
-    const isPremium = subscriptionType === 'premium';
-    return (
-      <span className={`inline-flex items-center px-2 py-1 text-xs rounded-full ${
-        isPremium ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
-      }`}>
-        {isPremium && <Crown className="w-3 h-3 mr-1" />}
-        {isPremium ? 'Premium' : 'Free'}
-      </span>
-    );
+ useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const { users: fetchedUsers } = await getUsers(page, search, status);
+        setUsers(fetchedUsers);
+      } catch (err: any) {
+        setError("Failed to fetch users");
+        console.error("Error fetching users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const handleSelectUser = async (userId: string) => {
+    setLoading(true);
+    try {
+      const user = await getUser(userId);
+      setSelectedUser(user);
+    } catch (err) {
+      console.warn("API failed, falling back to getUserById");
+      try {
+        const fallbackUser = await getUserById(userId);
+        setSelectedUser(fallbackUser);
+      } catch (fallbackErr) {
+        setError("Failed to fetch user details");
+        console.error("Fallback error:", fallbackErr);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateUser = async (
+    userId: string,
+    updates: Partial<AdminUser>
+  ) => {
+    setLoading(true);
+    try {
+      const updated = await updateUser(userId, updates);
+      setSelectedUser(updated);
+      setUsers((prev) => prev.map((u) => (u.id === userId ? updated : u)));
+    } catch (err) {
+      setError("Failed to update user");
+      console.error("Update error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    setLoading(true);
+    try {
+      await deleteUser(userId);
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      setSelectedUser(null);
+    } catch (err) {
+      setError("Failed to delete user");
+      console.error("Delete error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEnhancedProfile = async (userId: string) => {
+    setLoading(true);
+    try {
+      const profile = await getAdminEnhancedUserProfile(userId);
+      console.log("Enhanced profile:", profile);
+    } catch (err) {
+      setError("Failed to fetch enhanced profile");
+      console.error("Profile error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Filter users based on search and status
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          user.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || user.status === filterStatus;
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filterStatus === "all" || user.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
@@ -144,38 +178,40 @@ useEffect(() => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
-        <div className="flex gap-2">
-          <button
-            onClick={fetchUsers}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </button>
-          <button
-            onClick={handleExportUsers}
-            className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-          >
-            <Download className="w-4 h-4" />
-            Export CSV
-          </button>
-          {selectedUsers.length > 0 && (
-            <button
-              onClick={() => {
-                if (confirm(`Delete ${selectedUsers.length} selected users?`)) {
-                  // Implement bulk delete
-                  console.log('Bulk delete:', selectedUsers);
-                }
-              }}
-              className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-            >
-              <Trash2 className="w-4 h-4" />
-              Delete Selected ({selectedUsers.length})
-            </button>
-          )}
-        </div>
+     
+      <div className="p-6">
+        <h1 className="text-xl font-bold mb-4">Users Management</h1>
+        {loading && <p>Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+        <ul className="space-y-2">
+          {users.map((user) => (
+            <li key={user.id} className="border p-4 rounded">
+              <div className="flex justify-between items-center">
+                <span>
+                  {user.full_name} ({user.email})
+                </span>
+                <div className="space-x-2">
+                  <button onClick={() => handleSelectUser(user.id)}>
+                    View
+                  </button>
+                  <button onClick={() => handleEnhancedProfile(user.id)}>
+                    Profile+
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleUpdateUser(user.id, { status: "inactive" })
+                    }
+                  >
+                    Deactivate
+                  </button>
+                  <button onClick={() => handleDeleteUser(user.id)}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Search and Filter */}
@@ -195,11 +231,7 @@ useEffect(() => {
           <select
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={filterStatus}
-       
-
-
             onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
-
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -211,24 +243,32 @@ useEffect(() => {
       {/* Users Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="text-2xl font-bold text-gray-900">{filteredUsers.length}</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {filteredUsers.length}
+          </div>
           <div className="text-sm text-gray-600">Total Users</div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border">
           <div className="text-2xl font-bold text-green-600">
-            {filteredUsers.filter(u => u.status === 'active').length}
+            {filteredUsers.filter((u) => u.status === "active").length}
           </div>
           <div className="text-sm text-gray-600">Active Users</div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border">
           <div className="text-2xl font-bold text-yellow-600">
-            {filteredUsers.filter(u => u.subscription_type === 'premium').length}
+            {
+              filteredUsers.filter((u) => u.subscription_type === "premium")
+                .length
+            }
           </div>
           <div className="text-sm text-gray-600">Premium Users</div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border">
           <div className="text-2xl font-bold text-blue-600">
-            {filteredUsers.reduce((sum, u) => sum + (u.applications_sent || 0), 0)}
+            {filteredUsers.reduce(
+              (sum, u) => sum + (u.applications_sent || 0),
+              0
+            )}
           </div>
           <div className="text-sm text-gray-600">Total Applications</div>
         </div>
@@ -243,7 +283,10 @@ useEffect(() => {
                 <th className="px-6 py-3 text-left">
                   <input
                     type="checkbox"
-                    checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                    checked={
+                      selectedUsers.length === filteredUsers.length &&
+                      filteredUsers.length > 0
+                    }
                     onChange={handleSelectAll}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
@@ -279,7 +322,9 @@ useEffect(() => {
                         if (e.target.checked) {
                           setSelectedUsers([...selectedUsers, userRecord.id]);
                         } else {
-                          setSelectedUsers(selectedUsers.filter(id => id !== userRecord.id));
+                          setSelectedUsers(
+                            selectedUsers.filter((id) => id !== userRecord.id)
+                          );
                         }
                       }}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
@@ -292,9 +337,11 @@ useEffect(() => {
                       </div>
                       <div className="ml-4">
                         <div className="font-medium text-gray-900">
-                          {userRecord.full_name || userRecord.name || 'N/A'}
+                          {userRecord.full_name || userRecord.name || "N/A"}
                         </div>
-                        <div className="text-sm text-gray-500">ID: {userRecord.id.slice(0, 8)}...</div>
+                        <div className="text-sm text-gray-500">
+                          ID: {userRecord.id.slice(0, 8)}...
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -302,7 +349,7 @@ useEffect(() => {
                     <div className="space-y-1">
                       <div className="flex items-center text-sm text-gray-900">
                         <Mail className="w-4 h-4 mr-1 text-gray-400" />
-                        {userRecord.email || 'N/A'}
+                        {userRecord.email || "N/A"}
                       </div>
                       {userRecord.location && (
                         <div className="flex items-center text-sm text-gray-500">
@@ -332,19 +379,23 @@ useEffect(() => {
                     {getStatusBadge(userRecord.status)}
                   </td>
                   <td className="px-6 py-4">
-                    {getSubscriptionBadge(userRecord.subscription_type)}
+                    {/* {getSubscriptionBadge(userRecord.subscription_type)} */}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => {/* TODO: Implement view user details */}}
+                        onClick={() => {
+                          /* TODO: Implement view user details */
+                        }}
                         className="text-gray-400 hover:text-gray-600"
                         title="View details"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => {/* TODO: Implement edit user */}}
+                        onClick={() => {
+                          /* TODO: Implement edit user */
+                        }}
                         className="text-gray-400 hover:text-gray-600"
                         title="Edit user"
                       >
@@ -372,11 +423,13 @@ useEffect(() => {
           <div className="w-12 h-12 mx-auto mb-4 text-gray-400">
             <Users className="w-full h-full" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">No users found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-1">
+            No users found
+          </h3>
           <p className="text-gray-500">
-            {searchTerm || filterStatus !== 'all' 
-              ? 'Try adjusting your search or filter criteria.'
-              : 'Users will appear here once they register.'}
+            {searchTerm || filterStatus !== "all"
+              ? "Try adjusting your search or filter criteria."
+              : "Users will appear here once they register."}
           </p>
         </div>
       )}
@@ -385,4 +438,3 @@ useEffect(() => {
 };
 
 export default UserManagement;
-

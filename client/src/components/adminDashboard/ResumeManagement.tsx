@@ -14,9 +14,9 @@ import {
   Filter,
   Star,
 } from "lucide-react";
-import { AdminResume } from "@/types/admin_application";
-import { AdminService } from "@/utils/admin-jobs";
-import {  AuthUser } from "@/types/application";
+import { AdminResume } from "@/types/admin";
+import { AdminService, ResumeService } from "@/app/services/admin/index";
+import {  AuthUser } from "@/types";
 
 interface ResumeManagementProps {
   user: AuthUser;
@@ -51,7 +51,7 @@ useEffect(() => {
   const fetchResumes = async () => {
     setLoading(true);
     try {
-      const resumesData = await AdminService.getAllResumes();
+      const resumesData = await ResumeService.getAllResumes();
       setResumes(resumesData);
     } catch (error) {
       console.error("Error fetching resumes:", error);

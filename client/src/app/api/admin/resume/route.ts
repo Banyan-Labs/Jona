@@ -1,49 +1,27 @@
 
 // app/api/admin/resumes/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
-
+import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { getResumes } from "@/app/services/admin/resume";
 export async function GET(request: NextRequest) {
   try {
+    const supabase = createServerActionClient({ cookies });
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error || !user || user.user_metadata?.role !== 'admin') {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const search = searchParams.get('search');
+    const search = searchParams.get('search') || '';
+
+    const resumes = await getResumes(page, search);
     
-    let query = supabase
-      .from('resumes')
-      .select(`
-        *,
-        users!resumes_user_id_fkey (
-          name,
-          email
-        )
-      `, { count: 'exact' })
-      .order('created_at', { ascending: false });
-
-    if (search) {
-      query = query.or(`file_name.ilike.%${search}%`);
-    }
-
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
-    
-    query = query.range(from, to);
-
-    const { data, error, count } = await query;
-
-    if (error) {
-      throw error;
-    }
-
-    return NextResponse.json({
-      resumes: data,
-      total: count,
-      page,
-      limit
-    }, { status: 200 });
+    return NextResponse.json(resumes);
   } catch (error) {
-    console.error('Error fetching resumes:', error);
+    console.error("Error fetching resumes:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

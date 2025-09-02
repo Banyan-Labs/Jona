@@ -1,7 +1,12 @@
-import { useCallback,useRef,useState,useEffect } from "react";
-import { AuthUser } from "@/types/application";
-import { supabase } from "@/app/api/auth/auth";
+// client/src/hooks/useSessionManager.ts
+"use client"
+
+import { useCallback, useRef, useState, useEffect } from "react";
+import { AuthUser } from "@/types/index";
+import { supabase } from "@/lib/supabaseClient"; // Fix import path
+
 const AUTH_TIMEOUT = 2 * 60 * 60 * 1000;
+
 export const useSessionManager = (setUser: (user: AuthUser | null) => void) => {
   const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);

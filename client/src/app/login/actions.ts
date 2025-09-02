@@ -1,21 +1,21 @@
-'use server';
+'use server'
 
-import { createServerActionClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { createServerActionClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
-export async function handleLogin() {
-  const supabase = createServerActionClient({ cookies });
+export async function handleLogin(formData: FormData) {
+  const supabase = createServerActionClient({ cookies })
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
 
-  const role = session?.user?.user_metadata?.role;
+  const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password })
 
-  if (role === 'admin') {
-    redirect('/admin/dashboard');
-  } else {
-    redirect('/user/home');
+  if (error || !user) {
+    redirect('/login') // fallback
   }
+
+  const role = user.user_metadata?.role || 'user'
+  redirect(role === 'admin' ? '/admin/dashboard' : '/dashboard')
 }

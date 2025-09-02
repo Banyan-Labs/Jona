@@ -26,6 +26,7 @@ out/
 .venv/
 __pycache__/
 *.pyc
+tsconfig.tsbuildinfo
 
 # Editor Configs
 .vscode/

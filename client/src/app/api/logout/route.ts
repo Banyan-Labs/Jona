@@ -1,8 +1,16 @@
-import { cookies } from "next/headers";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
+// /app/api/logout/route.ts
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-export async function POST() {
-  const supabase = createServerActionClient({ cookies });
-  await supabase.auth.signOut();
-  return new Response("Signed out", { status: 200 });
+export async function POST(request: Request) {
+  const supabase = createRouteHandlerClient({ cookies });
+
+  try {
+    await supabase.auth.signOut();
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+
+  return NextResponse.redirect(new URL('/login', request.url));
 }

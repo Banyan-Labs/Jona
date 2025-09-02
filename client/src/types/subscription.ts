@@ -1,0 +1,152 @@
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  description?: string;
+  price_monthly?: number;
+  price_yearly?: number;
+  features: string[];
+  max_jobs_per_month?: number;
+  max_resumes?: number;
+  max_applications_per_day?: number;
+  auto_scrape_enabled: boolean;
+  priority_support: boolean;
+  active: boolean;
+  created_at?: string;
+  updated_at?: string;
+  popular?: boolean;
+}
+export interface PaymentHistory {
+  id: string;
+  user_id: string;
+  subscription_id: string;
+  stripe_payment_intent_id?: string;
+  amount: number;
+  currency: string;
+  status: PaymentStatus;
+  payment_date?: string;
+  created_at?: string;
+}
+export interface StripeCheckoutSession {
+  url: string;
+  session_id: string;
+}
+
+export interface SubscriptionLimits {
+  jobs_per_month: number;
+  resumes: number;
+  applications_per_day: number;
+  auto_scrape_enabled: boolean;
+  priority_support: boolean;
+}
+
+export interface UsageSummary {
+  current_month: {
+    jobs_scraped: number;
+    applications_sent: number;
+    resumes_uploaded: number;
+  };
+  limits: SubscriptionLimits;
+  percentage_used: {
+    jobs: number;
+    applications: number;
+    resumes: number;
+  };
+}
+
+export interface UserSubscription {
+  id: string;
+  user_id: string;
+  plan_id: string;
+  status: SubscriptionStatus;
+  billing_cycle: BillingCycle;
+  current_period_start: string;
+  current_period_end: string;
+  stripe_subscription_id?: string;
+  stripe_customer_id?: string;
+  price_paid?: number;
+  created_at?: string;
+  updated_at?: string;
+  canceled_at?: string;
+  plan?: SubscriptionPlan;
+}
+
+export interface UserUsage {
+  id: string;
+  user_id: string;
+  month_year: string;
+  jobs_scraped: number;
+  applications_sent: number;
+  resumes_uploaded: number;
+  errors_encountered?: number;
+  bot_blocks?: number;
+  success_rate?: number;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+
+export interface CurrentSubscription {
+  subscription_id: string;
+  plan_name: string;
+  status: SubscriptionStatus;
+  current_period_end: string;
+  max_jobs_per_month?: number;
+  max_resumes?: number;
+  max_applications_per_day?: number;
+  auto_scrape_enabled: boolean;
+  priority_support: boolean;
+}
+export interface UserSubscriptionLimits {
+  jobs_per_month: number;
+  resumes: number;
+  applications_per_day: number;
+  auto_scrape_enabled: boolean;
+  priority_support: boolean;
+}
+
+export interface UserUsageSummary {
+  current_month: {
+    jobs_scraped: number;
+    applications_sent: number;
+    resumes_uploaded: number;
+    errors_encountered?: number;
+    bot_blocks?: number;
+    success_rate?: number;
+  };
+  previous_month?: {
+    jobs_scraped: number;
+    applications_sent: number;
+    resumes_uploaded: number;
+    success_rate?: number;
+  };
+  limits: UserSubscriptionLimits;
+  percentage_used: {
+    jobs: number;
+    applications: number;
+    resumes: number;
+  };
+}
+
+
+
+export type UsagePayload = UserUsageSummary | UserUsage;
+
+export function isUserUsageSummary(data: UsagePayload): data is UserUsageSummary {
+  return (
+    "current_month" in data && "limits" in data && "percentage_used" in data
+  );
+}
+
+
+
+// export type UsageStats = UserUsageSummary | UserUsage;
+export type SubscriptionStatus =
+  | "active"
+  | "canceled"
+  | "expired"
+  | "past_due"
+  | "unpaid";
+export type BillingCycle = "monthly" | "yearly";
+export type PaymentStatus = "succeeded" | "failed" | "pending" | "canceled";
+

@@ -1,5 +1,4 @@
-
-
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -18,7 +17,9 @@ def get_headless_browser():
     chrome_options.add_argument("--window-size=1920x1080")
 
   
-    driver_path = "C:/Users/snoep_a5dedf8/Downloads/chromedriver-win64/chromedriver-win64/chromedriver.exe"
+
+    driver_path = Path("C:/Users/Administrator/Downloads/chromedriver-win64/chromedriver-win64/chromedriver.exe")
+
 
     if not os.path.isfile(driver_path):
         raise FileNotFoundError(f"❌ ChromeDriver not found at: {driver_path}")
@@ -37,5 +38,28 @@ def configure_webdriver():
     driver = uc.Chrome(options=options, headless=False)
     driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
         "source": "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+    })
+    return driver
+
+
+
+
+def configure_driver():
+    options = uc.ChromeOptions()
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument(
+        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.7204.50 Safari/537.36"
+    )
+
+    driver = uc.Chrome(options=options, headless=False)
+    driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+        "source": """
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            })
+        """
     })
     return driver

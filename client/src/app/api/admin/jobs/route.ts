@@ -1,69 +1,114 @@
-
-// app/api/admin/jobs/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { getJobs,createJob } from "@/app/services/admin/jobs";
+import { logAdminAction } from "@/app/services/admin/admin-log-service";
+import {getSupabaseAdmin} from "@/lib/supabaseAdmin";
 
 export async function GET(request: NextRequest) {
+  const supabase = createServerActionClient({ cookies });
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user || user.user_metadata?.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const search = searchParams.get('search');
-    const status = searchParams.get('status');
-    
-    let query = supabase
-      .from('jobs')
-      .select('*', { count: 'exact' })
-      .order('inserted_at', { ascending: false });
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "50");
+    const search = searchParams.get("search") || "";
+    const status = searchParams.get("status") || "all";
+
+    try {
+      const jobs = await getJobs(page, search, status);
+      return NextResponse.json(jobs);
+    } catch (apiError) {
+      console.warn("API endpoint unavailable, falling back to direct DB queries");
+    }
+   const supabaseAdmin = await getSupabaseAdmin();
+
+    // Fallback logic
+    let query = supabaseAdmin
+      .from("jobs")
+      .select("*", { count: "exact" })
+      .order("inserted_at", { ascending: false });
 
     if (search) {
       query = query.or(`title.ilike.%${search}%,company.ilike.%${search}%`);
     }
 
-    if (status && status !== 'all') {
-      query = query.eq('status', status);
+    if (status !== "all") {
+      query = query.eq("status", status);
     }
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
-    
     query = query.range(from, to);
 
-    const { data, error, count } = await query;
+    const { data, error: fallbackError, count } = await query;
+    if (fallbackError) throw fallbackError;
 
-    if (error) {
-      throw error;
-    }
-
-    return NextResponse.json({
-      jobs: data,
-      total: count,
-      page,
-      limit
-    }, { status: 200 });
+    return NextResponse.json({ jobs: data, total: count, page, limit }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching jobs:', error);
+    console.error("Error fetching jobs:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
+
+  const supabase = createServerActionClient({ cookies });
+   const supabaseAdmin = await getSupabaseAdmin();
+
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user || user.user_metadata?.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const jobData = await request.json();
-    
-    const { data, error } = await supabase
-      .from('jobs')
+
+    try {
+      const job = await createJob(jobData);
+
+      await logAdminAction(
+
+        user.id,
+        user.email || "",
+        "job_created",
+        "job",
+        job.id,
+        jobData
+      );
+
+      return NextResponse.json(job);
+    } catch (apiError) {
+      console.warn("API endpoint unavailable, falling back to direct DB insert");
+    }
+
+    // Fallback logic
+    const { data: fallbackJob, error: fallbackError } = await supabaseAdmin
+      .from("jobs")
       .insert(jobData)
       .select()
       .single();
 
-    if (error) {
-      throw error;
-    }
+    if (fallbackError) throw fallbackError;
 
-    return NextResponse.json(data, { status: 201 });
+    await logAdminAction(
+      user.id,
+      user.email || "",
+      "job_created",
+      "job",
+      fallbackJob.id,
+      jobData
+    );
+
+    return NextResponse.json(fallbackJob, { status: 201 });
   } catch (error) {
-    console.error('Error creating job:', error);
+    console.error("Error creating job:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
