@@ -22,8 +22,8 @@ export interface ResumeComparison {
   user_id: string;
   resume_id?: string;
   job_id?: string;
-  matched_skills?: string[] | any; // jsonb in database
-  missing_skills?: string[] | any; // jsonb in database
+  matched_skills?: string[] | any; 
+  missing_skills?: string[] | any; 
   match_score?: number;
   compared_at?: string;
 }

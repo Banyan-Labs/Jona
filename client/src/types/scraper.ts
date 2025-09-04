@@ -49,15 +49,6 @@ export interface ScraperBenchmark {
   errors_encountered: number;
 }
 
-
-
-
-
-
-
-
-
-// types/scraper.ts
 export interface ScraperConfig {
   location: string;
   days: number;
@@ -124,7 +115,7 @@ export interface ScrapingLog {
   admin_user_id?: string;
   scraper_type?: string;
   timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
+  level: "info" | "warn" | "error" | "debug";
   scraper_name?: string;
   operation: string;
   message: string;
@@ -210,10 +201,13 @@ export interface SystemConfiguration {
   description?: string;
 }
 
-// Notification types for real-time updates
 export interface ScraperNotification {
   id: string;
-  type: "scraper_started" | "scraper_completed" | "scraper_failed" | "jobs_found";
+  type:
+    | "scraper_started"
+    | "scraper_completed"
+    | "scraper_failed"
+    | "jobs_found";
   scraper_name: string;
   message: string;
   data?: any;
@@ -221,7 +215,6 @@ export interface ScraperNotification {
   read: boolean;
 }
 
-// Error handling types
 export interface ApiError {
   error: string;
   message?: string;
@@ -234,8 +227,6 @@ export interface ScraperError extends ApiError {
   log_id?: string;
   stage?: "initialization" | "scraping" | "processing" | "saving";
 }
-
-// Utility types for the frontend components
 export interface ScraperCardProps {
   scraper: {
     id: string;

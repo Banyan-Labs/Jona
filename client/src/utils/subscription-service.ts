@@ -33,7 +33,6 @@ export class SubscriptionService {
     }
   }
 
-  // Get user's current subscription with better error handling
   static async getCurrentSubscription(
     userId: string
   ): Promise<CurrentSubscription | null> {
@@ -62,15 +61,17 @@ export class SubscriptionService {
     try {
       const { data, error } = await supabase
         .from("user_subscriptions")
-        .select(`
+        .select(
+          `
           *,
           plan:subscription_plans(*)
-        `)
+        `
+        )
         .eq("user_id", userId)
         .eq("status", "active")
         .order("created_at", { ascending: false })
         .limit(1)
-        .maybeSingle(); // Use maybeSingle instead of single
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching user subscription:", error);
@@ -97,7 +98,7 @@ export class SubscriptionService {
         .select("*")
         .eq("user_id", userId)
         .eq("month_year", currentMonth)
-        .maybeSingle(); // Use maybeSingle instead of single
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching user usage:", error);
@@ -112,9 +113,8 @@ export class SubscriptionService {
       return data;
     } catch (error) {
       console.error("getUserUsage error:", error);
-      // Return default usage instead of throwing
       return {
-        id: '',
+        id: "",
         user_id: userId,
         month_year: monthYear || new Date().toISOString().slice(0, 7),
         jobs_scraped: 0,
@@ -148,7 +148,7 @@ export class SubscriptionService {
         console.error("Error initializing user usage:", error);
         // Return default instead of throwing
         return {
-          id: '',
+          id: "",
           user_id: userId,
           month_year: monthYear,
           jobs_scraped: 0,
@@ -163,7 +163,7 @@ export class SubscriptionService {
     } catch (error) {
       console.error("initializeUserUsage error:", error);
       return {
-        id: '',
+        id: "",
         user_id: userId,
         month_year: monthYear,
         jobs_scraped: 0,
@@ -179,7 +179,9 @@ export class SubscriptionService {
   static async updateUserUsage(
     userId: string,
     monthYear: string,
-    usage: Partial<Pick<UserUsage, "jobs_scraped" | "applications_sent" | "resumes_uploaded">>
+    usage: Partial<
+      Pick<UserUsage, "jobs_scraped" | "applications_sent" | "resumes_uploaded">
+    >
   ): Promise<UserUsage | null> {
     try {
       const { data, error } = await supabase
@@ -227,11 +229,9 @@ export class SubscriptionService {
       await this.updateUserUsage(userId, monthYear, updatedUsage);
     } catch (error) {
       console.error("incrementUsage error:", error);
-      // Don't throw - just log the error
     }
   }
 
-  // Check if user has reached limits with fallback defaults
   static async checkUsageLimits(userId: string): Promise<{
     canScrapeJobs: boolean;
     canSendApplications: boolean;
@@ -252,9 +252,13 @@ export class SubscriptionService {
 
       if (!subscription) {
         return {
-          canScrapeJobs: (usage?.jobs_scraped || 0) < defaultLimits.max_jobs_per_month,
-          canSendApplications: (usage?.applications_sent || 0) < defaultLimits.max_applications_per_day,
-          canUploadResumes: (usage?.resumes_uploaded || 0) < defaultLimits.max_resumes,
+          canScrapeJobs:
+            (usage?.jobs_scraped || 0) < defaultLimits.max_jobs_per_month,
+          canSendApplications:
+            (usage?.applications_sent || 0) <
+            defaultLimits.max_applications_per_day,
+          canUploadResumes:
+            (usage?.resumes_uploaded || 0) < defaultLimits.max_resumes,
           limits: defaultLimits,
           usage,
         };
@@ -385,7 +389,7 @@ export class SubscriptionService {
         return summary;
       }
 
-      if (summaryError && summaryError.code !== 'PGRST116') {
+      if (summaryError && summaryError.code !== "PGRST116") {
         console.warn("Usage summary fetch failed:", summaryError.message);
       }
 
@@ -411,25 +415,25 @@ export class SubscriptionService {
 }
 
 export async function getCurrentSubscription(
-    userId: string
-  ): Promise<CurrentSubscription | null> {
-    try {
-      const { data, error } = await supabase.rpc(
-        "get_user_current_subscription",
-        { user_uuid: userId }
-      );
+  userId: string
+): Promise<CurrentSubscription | null> {
+  try {
+    const { data, error } = await supabase.rpc(
+      "get_user_current_subscription",
+      { user_uuid: userId }
+    );
 
-      if (error) {
-        console.error("Error fetching current subscription:", error);
-        return null;
-      }
-
-      return data?.[0] || null;
-    } catch (error) {
-      console.error("getCurrentSubscription error:", error);
+    if (error) {
+      console.error("Error fetching current subscription:", error);
       return null;
     }
+
+    return data?.[0] || null;
+  } catch (error) {
+    console.error("getCurrentSubscription error:", error);
+    return null;
   }
+}
 
 export async function updateUserProfile(
   userId: string,
@@ -457,50 +461,51 @@ export async function updateUserProfile(
     return null;
   }
 }
-export async function getUsagePayload(userId: string): Promise<UsagePayload | null> {
-    try {
-      // Check if user has access to these tables first
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        console.error("No valid session for usage payload");
-        return null;
-      }
-
-      // Try to fetch the usage summary first, but handle permissions gracefully
-      const { data: summary, error: summaryError } = await supabase
-        .from("user_usage_summary")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (summary && isUserUsageSummary(summary)) {
-        return summary;
-      }
-
-      if (summaryError && summaryError.code !== 'PGRST116') {
-        console.warn("Usage summary fetch failed:", summaryError.message);
-      }
-
-      // Fallback to raw usage if summary not found or permission denied
-      const { data: usageData, error: usageError } = await supabase
-        .from("user_usage")
-        .select("*")
-        .eq("user_id", userId)
-        .order("month_year", { ascending: false })
-        .limit(1);
-
-      if (usageError) {
-        console.warn("Usage data fetch failed:", usageError.message);
-        return null;
-      }
-
-      return usageData?.[0] ?? null;
-    } catch (error) {
-      console.error("getUsagePayload error:", error);
+export async function getUsagePayload(
+  userId: string
+): Promise<UsagePayload | null> {
+  try {
+    // Check if user has access to these tables first
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) {
+      console.error("No valid session for usage payload");
       return null;
     }
-  }
 
+    // Try to fetch the usage summary first, but handle permissions gracefully
+    const { data: summary, error: summaryError } = await supabase
+      .from("user_usage_summary")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (summary && isUserUsageSummary(summary)) {
+      return summary;
+    }
+
+    if (summaryError && summaryError.code !== "PGRST116") {
+      console.warn("Usage summary fetch failed:", summaryError.message);
+    }
+
+    // Fallback to raw usage if summary not found or permission denied
+    const { data: usageData, error: usageError } = await supabase
+      .from("user_usage")
+      .select("*")
+      .eq("user_id", userId)
+      .order("month_year", { ascending: false })
+      .limit(1);
+
+    if (usageError) {
+      console.warn("Usage data fetch failed:", usageError.message);
+      return null;
+    }
+
+    return usageData?.[0] ?? null;
+  } catch (error) {
+    console.error("getUsagePayload error:", error);
+    return null;
+  }
+}
 
 import { AuthUser } from "@/types/index";
 
@@ -511,7 +516,9 @@ export async function SubscriptionBundleService(user: AuthUser) {
   }
 
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
     if (!session?.user) {
       console.error("No user session found");
@@ -548,19 +555,38 @@ export async function SubscriptionBundleService(user: AuthUser) {
 
     return {
       user,
-      plans: plansResult.status === 'fulfilled' ? plansResult.value : [],
-      currentSubscription: currentSubscriptionResult.status === 'fulfilled' ? currentSubscriptionResult.value : null,
-      userSubscription: userSubscriptionResult.status === 'fulfilled' ? userSubscriptionResult.value : null,
-      usage: usageResult.status === 'fulfilled' ? usageResult.value : null,
-      usagePayload: usagePayloadResult.status === 'fulfilled' ? usagePayloadResult.value : null,
-      paymentHistory: paymentHistoryResult.status === 'fulfilled' ? paymentHistoryResult.value : [],
-      usageLimits: usageLimitsResult.status === 'fulfilled' ? usageLimitsResult.value : {
-        canScrapeJobs: true,
-        canSendApplications: true,
-        canUploadResumes: true,
-        limits: { max_jobs_per_month: 50, max_applications_per_day: 5, max_resumes: 1 },
-        usage: null,
-      },
+      plans: plansResult.status === "fulfilled" ? plansResult.value : [],
+      currentSubscription:
+        currentSubscriptionResult.status === "fulfilled"
+          ? currentSubscriptionResult.value
+          : null,
+      userSubscription:
+        userSubscriptionResult.status === "fulfilled"
+          ? userSubscriptionResult.value
+          : null,
+      usage: usageResult.status === "fulfilled" ? usageResult.value : null,
+      usagePayload:
+        usagePayloadResult.status === "fulfilled"
+          ? usagePayloadResult.value
+          : null,
+      paymentHistory:
+        paymentHistoryResult.status === "fulfilled"
+          ? paymentHistoryResult.value
+          : [],
+      usageLimits:
+        usageLimitsResult.status === "fulfilled"
+          ? usageLimitsResult.value
+          : {
+              canScrapeJobs: true,
+              canSendApplications: true,
+              canUploadResumes: true,
+              limits: {
+                max_jobs_per_month: 50,
+                max_applications_per_day: 5,
+                max_resumes: 1,
+              },
+              usage: null,
+            },
     };
   } catch (error) {
     console.error("SubscriptionBundleService error:", error);

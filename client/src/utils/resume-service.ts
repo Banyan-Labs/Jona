@@ -2,34 +2,33 @@
 "use client";
 import { supabase } from "@/lib/supabaseClient";
 import type { Resume, AuthUser, Job } from "@/types/index";
-import {useAuth} from '@/hooks/useAuth'
-
+import { useAuth } from "@/hooks/useAuth";
 
 export class ResumeService {
   // 📤 Upload resume file to Supabase Storage
-// 📤 Upload resume file to Supabase Storage
-static async uploadResume(
-  file: File,
-  userId: string,
-  accessToken: string
-): Promise<string> {
-  const safeName = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
-  const path = `user_${userId}/${safeName}`;
+  // 📤 Upload resume file to Supabase Storage
+  static async uploadResume(
+    file: File,
+    userId: string,
+    accessToken: string
+  ): Promise<string> {
+    const safeName = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
+    const path = `user_${userId}/${safeName}`;
 
-  const { data, error } = await supabase.storage
-    .from("resumes")
-    .upload(path, file, {
-      upsert: true,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const { data, error } = await supabase.storage
+      .from("resumes")
+      .upload(path, file, {
+        upsert: true,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-  if (error) throw new Error("Upload failed: " + error.message);
-  if (!data?.path) throw new Error("Upload succeeded but no path returned");
+    if (error) throw new Error("Upload failed: " + error.message);
+    if (!data?.path) throw new Error("Upload succeeded but no path returned");
 
-  return data.path;
-}
+    return data.path;
+  }
 
   // 🌐 Get public URL for a resume file
   static getResumePublicUrl(userId: string, fileName: string): string {
@@ -40,7 +39,6 @@ static async uploadResume(
     return data.publicUrl;
   }
 
-  // 📝 Insert resume metadata into Supabase DB
   static async insertResumeMetadata(
     userId: string,
     file: File,
@@ -71,12 +69,12 @@ static async uploadResume(
     resumeText: string,
     accessToken: string
   ): Promise<Resume> {
-    const filePath = await this.uploadResume(file, user.id, accessToken );
+    const filePath = await this.uploadResume(file, user.id, accessToken);
     const fileUrl = this.getResumePublicUrl(user.id, file.name);
     await this.insertResumeMetadata(user.id, file, filePath, resumeText);
 
     return {
-      id: crypto.randomUUID(), // Optional: replace with Supabase-generated ID
+      id: crypto.randomUUID(),
       user_id: user.id,
       file_path: filePath,
       file_name: file.name,
@@ -88,7 +86,6 @@ static async uploadResume(
     };
   }
 
-  // 📄 Fetch the default resume for a user
   static async getDefaultResume(userId: string): Promise<Resume | null> {
     const { data, error } = await supabase
       .from("resumes")
@@ -105,7 +102,6 @@ static async uploadResume(
     return data as Resume | null;
   }
 
-  // 📚 Fetch all resumes for a user
   static async getUserResumes(userId: string): Promise<Resume[]> {
     const { data, error } = await supabase
       .from("resumes")
@@ -121,7 +117,6 @@ static async uploadResume(
     return data as Resume[];
   }
 
-  // 🛠️ Update resume metadata
   static async updateResume(
     resume: Partial<Resume> & { id: string }
   ): Promise<boolean> {
@@ -139,7 +134,6 @@ static async uploadResume(
       return false;
     }
 
-    // Optional: log admin action
     await supabase.from("admin_logs").insert({
       action: "resume_updated",
       user_id: resume.user_id,

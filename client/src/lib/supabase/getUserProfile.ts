@@ -8,7 +8,7 @@ export async function getUserProfileServer() {
   const cookieStore = cookies();
 
   const supabase = createServerComponentClient<Database>({
-    cookies: () => cookieStore, // ✅ Pass as a function
+    cookies: () => cookieStore, 
   });
 
   const { data: user } = await supabase.auth.getUser();

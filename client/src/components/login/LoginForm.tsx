@@ -7,7 +7,7 @@ import { toAuthUser } from "@/types";
 import { signInWithGoogle } from "@/lib/auth-actions";
 import { Shield } from "lucide-react";
 import HandleOAuthRedirect from '@/components/HandleOAuthRedirect';
-
+// import {Link} from 'next/'
 function LoginForm({
   onSuccess,
   setCurrentPage,
@@ -46,7 +46,7 @@ function LoginForm({
         if (role === "admin") {
           window.location.href = "/admin/dashboard";
         } else {
-          window.location.href = "/user/profile";
+          window.location.href = "/profile";
         }
       }
     } catch (error: any) {

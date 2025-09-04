@@ -33,7 +33,6 @@ export class JobService {
   }
 }
 
-  // 🔄 Update individual job status
   static async updateUserJobStatus(
     userId: string,
     jobId: string,
@@ -78,7 +77,6 @@ export class JobService {
     });
   }
 
-  // 📦 Batch update multiple jobs
   static async batchUpdateUserJobs(
     userId: string,
     updates: Array<{ jobId: string; data: Partial<UserJobStatus> }>
@@ -127,7 +125,7 @@ static async searchJobs(userId: string, searchTerm: string): Promise<(Job & Part
     return [];
   }
 }
-  // 🔍 Get filtered jobs (FIXED VERSION)
+
   static async getFilteredJobs(
     userId: string,
     filters: {
@@ -142,7 +140,6 @@ static async searchJobs(userId: string, searchTerm: string): Promise<(Job & Part
       // Start with all jobs
       let jobQuery = supabase.from("jobs").select("*");
 
-      // Apply job-level filters
       if (filters.category && filters.category !== "all") {
         jobQuery = jobQuery.eq("search_term", filters.category);
       }
@@ -172,7 +169,6 @@ static async searchJobs(userId: string, searchTerm: string): Promise<(Job & Part
 
       if (statusError) throw statusError;
 
-      // Create status map
       const statusMap = new Map(
         (statusData || []).map((status) => [status.job_id, status])
       );
@@ -183,7 +179,6 @@ static async searchJobs(userId: string, searchTerm: string): Promise<(Job & Part
         user_job_status: statusMap.get(job.id) || null,
       }));
 
-      // Apply user-status filters AFTER combining
       if (filters.filter && filters.filter !== "all") {
         const f = filters.filter;
         combinedData = combinedData.filter((job) => {
@@ -208,7 +203,7 @@ static async searchJobs(userId: string, searchTerm: string): Promise<(Job & Part
     }
   }
 
-  // 📊 Statistics (UPDATED)
+  // 📊 Statistics 
   static async getJobStatistics(userId: string): Promise<{
     total: number;
     applied: number;

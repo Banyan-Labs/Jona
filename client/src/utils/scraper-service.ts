@@ -152,11 +152,9 @@ class ScraperService {
   }
 }
 
-// Export both the class and singleton
 export { ScraperService };
 export const scraperService = new ScraperService();
 
-// Utility functions
 export const ScraperUtils = {
   formatDuration(seconds: number): string {
     if (seconds < 60) return `${seconds.toFixed(1)}s`;

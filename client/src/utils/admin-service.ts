@@ -120,8 +120,7 @@ export class AdminService {
   // Subscription Management
   async getSubscriptionStats() {
     try {
-      // Mock implementation - replace with actual subscription queries
-      const stats = {
+          const stats = {
         total_subscriptions: 0,
         active_subscriptions: 0,
         trial_subscriptions: 0,
@@ -153,8 +152,7 @@ export class AdminService {
     status?: string;
   }) {
     try {
-      // Mock implementation - replace with actual subscription table query
-      const { data, error } = await supabase
+           const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
         .limit(params?.limit || 50)
@@ -191,8 +189,6 @@ export class AdminService {
     search?: string;
   }) {
     try {
-      // Note: This would typically use Supabase Admin API
-      // For now, return empty array
       return { data: [], error: null };
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -202,8 +198,7 @@ export class AdminService {
 
   async updateUser(userId: string, updates: any) {
     try {
-      // Mock implementation
-      return { data: null, error: null };
+           return { data: null, error: null };
     } catch (error) {
       console.error('Error updating user:', error);
       return { data: null, error };

@@ -42,13 +42,7 @@ export interface SlimUser {
 
 export type UserType = Pick<PublicUser, "id" | "email" | "name"> | null;
 
-//
-// Conversion utilities
-//
-
-/**
- * Converts a SupabaseUser into an AuthUser, or returns null if invalid.
- */
+//Conversion functions
 export function toAuthUser(user: SupabaseUser | null): AuthUser | null {
   if (!user?.id || !user?.email) return null;
 
@@ -72,9 +66,6 @@ export function toAuthUser(user: SupabaseUser | null): AuthUser | null {
   };
 }
 
-/**
- * Converts a SupabaseUser into an AuthUser and throws if invalid.
- */
 export function toAuthUserRequired(user: SupabaseUser | null): AuthUser {
   const authUser = toAuthUser(user);
   if (!authUser) {
