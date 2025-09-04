@@ -27,7 +27,7 @@ export const getInitialDashboardStats = (): DashboardStatsProps => ({
 });
 export interface DashboardProps {
   user: AuthUser;
-  applications: JobApplication[]; // ✅ Add this
+  applications: JobApplication[]; 
   stats: DashboardStatsProps;
   setCurrentPageAction?: (page: string | ((prev: string) => string)) => void;
   allJobs: (Job & Partial<UserJobStatus>)[];
@@ -40,7 +40,7 @@ export interface DashboardStatsProps {
   pendingJobs: number;
   interviewJobs: number;
   offerJobs: number;
-  rejectedJobs: number; // ✅ Add this line
+  rejectedJobs: number; 
   matchRate: number;
   matchScore: number;
   totalUsers: number;

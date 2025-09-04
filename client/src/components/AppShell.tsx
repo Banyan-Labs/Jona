@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthUserContext";
 import Navbar from "@/components/navbar/Navbar";
-import Profile from "./profile/Profile";
+import Profile from "@/components/profile/Profile"
 import AboutPage from "@/components/about/AboutPage";
 import ContactPage from "@/components/contact/ContactPage";
 import AuthForm from "@/components/AuthForm";

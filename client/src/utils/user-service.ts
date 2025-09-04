@@ -18,7 +18,6 @@ import { safeSelect, safeSingle } from "@/lib/safeFetch";
 export class UserService {
   static async getUserProfile(userId: string): Promise<AuthUser | null> {
     try {
-      // First try to get from auth user
       const {
         data: { user },
         error: authError,
@@ -28,7 +27,6 @@ export class UserService {
         return toAuthUser(user);
       }
 
-      // Fallback: try to get from profiles table if you have one
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("*")

@@ -13,9 +13,9 @@ export * from "./resume";
 export * from "./settings";
 export * from "./subscription";
 
-// export * from "./auth";
 
-// Add any additional auth context types that might be needed
+
+
 export interface AuthContextType {
   authUser: AuthUser | null;
   user: AuthUser | null;

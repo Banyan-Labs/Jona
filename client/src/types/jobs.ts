@@ -18,10 +18,9 @@ export interface Job {
   status?: "applied" | "pending" | "interview" | "rejected" | "offer";
   last_verified?: string;
   inserted_at?: string;
-  skills?: string[] | any; // jsonb in database
+  skills?: string[] | any; 
   user_id?: string;
-  skills_by_category?: Record<string, string[]> | any; // jsonb in database
-  email?: string;
+  skills_by_category?: Record<string, string[]> | any; 
   archived_at?: string;
   updated_at?: string;
 }

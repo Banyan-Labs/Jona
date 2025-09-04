@@ -29,6 +29,8 @@ export interface PaymentHistory {
 export interface StripeCheckoutSession {
   url: string;
   session_id: string;
+  success?: boolean;
+  error?: string;
 }
 
 export interface SubscriptionLimits {
@@ -96,6 +98,8 @@ export interface CurrentSubscription {
   max_applications_per_day?: number;
   auto_scrape_enabled: boolean;
   priority_support: boolean;
+  features?: string;
+
 }
 export interface UserSubscriptionLimits {
   jobs_per_month: number;
@@ -140,7 +144,7 @@ export function isUserUsageSummary(data: UsagePayload): data is UserUsageSummary
 
 
 
-// export type UsageStats = UserUsageSummary | UserUsage;
+export type UsageStats = UserUsageSummary | UserUsage;
 export type SubscriptionStatus =
   | "active"
   | "canceled"

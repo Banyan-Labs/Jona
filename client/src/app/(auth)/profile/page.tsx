@@ -2,7 +2,7 @@
 
 import { requireUserAuth } from '@/lib/supabase/auth-middleware';
 import { getUserProfile,getUserSettings } from "@/app/services/user/user-server"
-
+import {UsagePayload} from '@/types/subscription';
 import Profile from '@/components/profile/Profile';
 import type { EnhancedUserProfile } from '@/types';
 
@@ -19,7 +19,7 @@ export default async function ProfilePage() {
     id: profile?.id ?? authUser.id,
     // Uncomment when ready:
     // current_subscription: subscription ?? null,
-    // usage: usagePayload ?? null,
+    // usage: UsagePayload ?? null,
   };
 
   const safeSettings = {
