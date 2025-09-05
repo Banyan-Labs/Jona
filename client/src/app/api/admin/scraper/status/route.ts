@@ -1,3 +1,5 @@
+// client\src\app\api\admin\scraper\status\route.ts
+
 import { NextRequest, NextResponse } from "next/server";
 import {getSupabaseAdmin} from "@/lib/supabaseAdmin";
 import { validateAdminAuth } from "@/lib/supabase/admin";

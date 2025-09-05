@@ -275,7 +275,9 @@ const handleAuthSuccess = async (user?: SupabaseUser) => {
     resetAuthTimeout();
     setShowTimeoutWarning(false);
   };
-
+const handlePageChange = (page: "login" | "register") => {
+  setCurrentPage(page);
+};
   // Show loading state while auth is initializing
   if (authLoading) {
     return (
@@ -314,18 +316,19 @@ const handleAuthSuccess = async (user?: SupabaseUser) => {
         
         {currentPage === "login" && (
           <AuthForm
-            mode="login"
+            mode={currentPage}
             onSuccessAction={handleAuthSuccess}
+  setCurrentPageAction={handlePageChange} // ✅ Must be here
            
           />
         )}
         
         {currentPage === "register" && (
-          <AuthForm
-            mode="register"
-            onSuccessAction={handleAuthSuccess}
-          
-          />
+        <AuthForm
+  mode={currentPage}
+  onSuccessAction={handleAuthSuccess}
+  setCurrentPageAction={handlePageChange} // ✅ Must be here
+/>
         )}
         
         {currentPage === "dashboard" && currentUser && (

@@ -1,3 +1,5 @@
+// client\src\app\api\admin\dashboard\stats\route.ts
+'use server'
 import { NextRequest, NextResponse } from "next/server";
 import {setBaseURL,handleAdminError} from "@/utils/baseUrl";
 import { supabase } from "@/lib/supabaseClient";

@@ -1,5 +1,5 @@
 'use client'
-
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { AuthUser } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
@@ -19,7 +19,7 @@ function LoginForm({
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+// const [currentPage, setCurrentPage] = useState<"login" | "register">("login");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -55,7 +55,9 @@ function LoginForm({
       setLoading(false);
     }
   };
-
+const handlePageChange = (page: "login" | "register") => {
+  setCurrentPage(page);
+};
   return (
     <div
       style={{
@@ -73,12 +75,11 @@ function LoginForm({
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Don't have an account?{" "}
-            <button
-              onClick={() => setCurrentPage("register")}
-              className="font-medium text-blue-600 hover:text-blue-500"
-            >
-              Sign up
-            </button>
+           <button onClick={() => setCurrentPage("register")}>
+  Sign up
+</button>
+              {/* Sign up
+            </button> */}
           </p>
         </div>
 
