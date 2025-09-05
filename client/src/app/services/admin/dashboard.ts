@@ -5,7 +5,6 @@ import { getAdminBaseURL } from "@/app/api/admin/base";
 import type { DashboardStatsProps } from "@/types/index";
 import type { AdminJob, AdminUser, AdminAuthUser } from "@/types/admin";
 
-// Optional: used in dashboard hydration
 export interface AdminDashboardProps {
   initialJobs: AdminJob[];
   initialUsers: AdminUser[];
@@ -14,10 +13,6 @@ export interface AdminDashboardProps {
   user: AdminAuthUser;
   role: string;
 }
-
-// ===================
-// DASHBOARD STATS
-// ===================
 
 export async function getDashboardStats(): Promise<DashboardStatsProps> {
   try {
@@ -70,7 +65,7 @@ export async function getDashboardStats(): Promise<DashboardStatsProps> {
     matchRate: matchScores.length > 0 ? Math.round((avgMatchScore / 100) * 100) : 0,
     matchScore: avgMatchScore,
     totalUsers: users.length,
-    activeUsers: users.length, // Placeholder—can be refined with status filtering
+    activeUsers: users.length,
     totalResumes: resumes.length,
     avgMatchScore,
     totalApplications: applications.length,

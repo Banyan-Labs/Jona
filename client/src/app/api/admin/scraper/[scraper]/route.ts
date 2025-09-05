@@ -1,3 +1,5 @@
+// client\src\app\api\admin\scraper\[scraper]\route.ts
+'use server'
 import { NextRequest, NextResponse } from "next/server";
 import { spawn, type ChildProcessWithoutNullStreams } from "child_process";
 import {getSupabaseAdmin} from "@/lib/supabaseAdmin";

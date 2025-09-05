@@ -1,3 +1,5 @@
+// client\src\app\api\admin\scraper\[scraper]\indeed\route.ts 
+
 'use server'
 import {getSupabaseAdmin} from "@/lib/supabaseAdmin";
 import { createErrorResponse, createSuccessResponse, checkRateLimit } from "@/lib/api-utils";

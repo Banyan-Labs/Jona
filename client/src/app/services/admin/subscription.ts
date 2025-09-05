@@ -23,12 +23,6 @@ import type {
 } from "@/types/admin";
 import { getAdminBaseURL } from "@/app/api/admin/base"
 
-
-
-// ===================
-// SUBSCRIPTIONS MANAGEMENT
-// ===================
-
 export async function getAllSubscriptions(): Promise<AdminSubscriptionData[]> {
    const supabaseAdmin = await getSupabaseAdmin();
 

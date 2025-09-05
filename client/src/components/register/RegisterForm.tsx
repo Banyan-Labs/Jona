@@ -1,25 +1,30 @@
-// client\src\components\register\RegisterForm.tsx
 "use client";
 import { useState } from "react";
 import {
   Upload,
-  User,
+  // User,
   Briefcase,
   MapPin,
   DollarSign,
   Globe,
   Linkedin,
   Github,
+  Image as ImageIcon,
 } from "lucide-react";
+import { User as UserIcon } from 'lucide-react'; 
 import { AuthUser } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
 import AuthForm from "../AuthForm";
 import { useRouter } from "next/navigation";
-type RegistrationFormProps = {
-  onSuccess: (user: any) => void;
-  setCurrentPage?: (page: string) => void; // Optional
-};
-
+import type { User } from '@supabase/supabase-js';
+// interface RegistrationFormProps {
+//   onSuccess: (user: AuthUser) => void;
+//   setCurrentPage?: (page: 'login' | 'register') => void;
+// }
+interface RegistrationFormProps {
+  onSuccess: (user: User) => void; // ✅ Use Supabase's User type
+  setCurrentPage?: (page: 'login' | 'register') => void;
+}
 // Mock subscription plans - replace with your actual plans
 const subscriptionPlans = [
   {
@@ -69,6 +74,7 @@ const jobTypes = [
   { value: "internship", label: "Internship" },
   { value: "freelance", label: "Freelance" },
 ];
+
 export default function RegistrationForm({
   onSuccess,
   setCurrentPage,
@@ -98,6 +104,7 @@ export default function RegistrationForm({
   });
 
   const [resume, setResume] = useState<File | null>(null);
+  const [avatar, setAvatar] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [step, setStep] = useState(1);
@@ -106,9 +113,12 @@ export default function RegistrationForm({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'resume' | 'avatar') => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    if (type === 'resume') {
+      // Resume validation
       if (file.size > 5 * 1024 * 1024) {
         setError("Resume file size must be less than 5MB");
         return;
@@ -124,44 +134,69 @@ export default function RegistrationForm({
         return;
       }
       setResume(file);
-      setError("");
+    } else if (type === 'avatar') {
+      // Avatar validation
+      if (file.size > 2 * 1024 * 1024) {
+        setError("Avatar file size must be less than 2MB");
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setError("Avatar must be an image file");
+        return;
+      }
+      setAvatar(file);
     }
+    
+    setError("");
   };
 
-  const uploadResume = async (userId: string): Promise<string | null> => {
-    if (!resume) return null;
+  const uploadFile = async (file: File, userId: string, type: 'resume' | 'avatar'): Promise<string | null> => {
     try {
-      const fileExt = resume.name.split(".").pop();
-      const fileName = `${userId}/resume.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
-        .from("resumes")
-        .upload(fileName, resume, { upsert: true });
-
-      if (uploadError) {
-        console.error("Resume upload error:", uploadError);
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${userId}/${type}.${fileExt}`;
+      const bucketName = type === 'resume' ? 'resumes' : 'avatars';
+      
+      console.log(`Uploading ${type}:`, fileName);
+      
+      // First, ensure we have a valid session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.error(`No active session for ${type} upload`);
         return null;
       }
 
+      const { data, error: uploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(fileName, file, { 
+          upsert: true,
+          contentType: file.type
+        });
+
+      if (uploadError) {
+        console.error(`${type} upload error:`, uploadError);
+        return null;
+      }
+
+      console.log(`${type} uploaded successfully:`, data);
+
       const {
         data: { publicUrl },
-      } = supabase.storage.from("resumes").getPublicUrl(fileName);
+      } = supabase.storage.from(bucketName).getPublicUrl(fileName);
 
       return publicUrl;
     } catch (error) {
-      console.error("Resume upload failed:", error);
+      console.error(`${type} upload failed:`, error);
       return null;
     }
   };
 
-  const createUserProfile = async (
-    userId: string,
-    resumeUrl: string | null
-  ) => {
+  const createUserProfile = async (userId: string, resumeUrl: string | null, avatarUrl: string | null) => {
     try {
       const profileData = {
         id: userId,
         email: formData.email,
         full_name: formData.fullName,
+        avatar_url: avatarUrl,
         phone: formData.phone,
         location: formData.location,
         bio: formData.bio,
@@ -179,23 +214,95 @@ export default function RegistrationForm({
         salary_range_max: formData.salaryRangeMax
           ? parseInt(formData.salaryRangeMax)
           : null,
-        subscription_plan: formData.selectedPlan,
         resume_url: resumeUrl,
         role: formData.role,
+        subscription_plan: formData.selectedPlan,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
-      const { error: profileError } = await supabase
-        .from("user_profiles")
-        .insert([profileData]);
+      console.log("Creating user profile:", profileData);
+
+      const { data, error: profileError } = await supabase
+        .from('user_profiles')
+        .insert([profileData])
+        .select();
 
       if (profileError) {
-        console.error("Profile creation error:", profileError);
+        console.error('Profile creation error:', profileError);
+        throw new Error(`Profile creation failed: ${profileError.message}`);
       }
+
+      console.log("Profile created successfully:", data);
+      return data;
+
     } catch (error) {
       console.error("Profile creation failed:", error);
+      throw error;
     }
+  };
+
+  // Comprehensive validation function
+  const validateAllFields = () => {
+    // Step 1 validation
+    if (!formData.email || !formData.password || !formData.fullName) {
+      setError("Please fill in all required fields (Email, Password, Full Name)");
+      setStep(1);
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setStep(1);
+      return false;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      setStep(1);
+      return false;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      setStep(1);
+      return false;
+    }
+
+    // Step 2 validation (optional but recommended)
+    if (formData.salaryRangeMin && formData.salaryRangeMax) {
+      const minSalary = parseInt(formData.salaryRangeMin);
+      const maxSalary = parseInt(formData.salaryRangeMax);
+      
+      if (minSalary >= maxSalary) {
+        setError("Maximum salary must be greater than minimum salary");
+        setStep(2);
+        return false;
+      }
+    }
+
+    // URL validation for optional fields
+    const urlFields = [
+      { field: formData.website, name: "Website" },
+      { field: formData.linkedinUrl, name: "LinkedIn" },
+      { field: formData.githubUrl, name: "GitHub" },
+    ];
+
+    for (const { field, name } of urlFields) {
+      if (field && field.trim()) {
+        try {
+          new URL(field);
+        } catch {
+          setError(`${name} must be a valid URL (include https://)`);
+          setStep(2);
+          return false;
+        }
+      }
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -203,7 +310,16 @@ export default function RegistrationForm({
     setLoading(true);
     setError("");
 
+    // Validate all fields before submitting
+    if (!validateAllFields()) {
+      setLoading(false);
+      return;
+    }
+
     try {
+      console.log("Starting registration process...");
+      
+      // Step 1: Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -217,35 +333,61 @@ export default function RegistrationForm({
         },
       });
 
-      if (authError) throw new Error(authError.message);
-      if (!authData.user)
+      if (authError) {
+        console.error("Auth error:", authError);
+        throw new Error(authError.message);
+      }
+      
+      if (!authData.user) {
         throw new Error("Registration failed - no user data returned");
+      }
 
+      console.log("User created successfully:", authData.user.id);
+
+      // Step 2: Upload files (non-blocking for registration success)
       let resumeUrl = null;
-      if (resume && authData.user.id) {
-        resumeUrl = await uploadResume(authData.user.id);
-      }
+      let avatarUrl = null;
 
-      if (authData.user.id) {
-        await createUserProfile(authData.user.id, resumeUrl);
-      }
-
-      if (authData.user.email_confirmed_at) {
-        alert("Registration successful! You are now logged in.");
-        onSuccess(authData.user);
-      } else {
-        alert(
-          "Registration successful! Please check your email to verify your account before signing in."
-        );
-        if (setCurrentPage) {
-          setCurrentPage("login");
+      if (resume) {
+        console.log("Attempting to upload resume...");
+        resumeUrl = await uploadFile(resume, authData.user.id, 'resume');
+        if (resumeUrl) {
+          console.log("Resume uploaded successfully");
         } else {
-          router.push("/login");
+          console.log("Resume upload failed, but continuing with registration");
         }
       }
+
+      if (avatar) {
+        console.log("Attempting to upload avatar...");
+        avatarUrl = await uploadFile(avatar, authData.user.id, 'avatar');
+        if (avatarUrl) {
+          console.log("Avatar uploaded successfully");
+        } else {
+          console.log("Avatar upload failed, but continuing with registration");
+        }
+      }
+
+      // Step 3: Create user profile
+      console.log("Creating user profile...");
+      await createUserProfile(authData.user.id, resumeUrl, avatarUrl);
+
+      // Step 4: Handle success
+      if (authData.user.email_confirmed_at) {
+        alert('Registration successful! You are now logged in.');
+        onSuccess(authData.user);
+      } else {
+        alert('Registration successful! Please check your email to verify your account before signing in.');
+        if (setCurrentPage) {
+          setCurrentPage('login');
+        } else {
+          router.push('/login');
+        }
+      }
+
     } catch (error: any) {
-      console.error("Registration error:", error);
-      setError(error.message || "Registration failed");
+      console.error('Registration error:', error);
+      setError(error.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -259,6 +401,7 @@ export default function RegistrationForm({
         : prev.preferredJobTypes.filter((t) => t !== jobType),
     }));
   };
+
   const handleLocationChange = (location: string) => {
     const locations = location
       .split(",")
@@ -280,6 +423,14 @@ export default function RegistrationForm({
       setError("Password must be at least 6 characters");
       return false;
     }
+    
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+    
     return true;
   };
 
@@ -291,6 +442,7 @@ export default function RegistrationForm({
       setStep(3);
     }
   };
+
   const renderStep1 = () => (
     <div className="space-y-4">
       <h3 className="text-lg font-medium text-gray-900 mb-4">
@@ -302,7 +454,7 @@ export default function RegistrationForm({
           Full Name *
         </label>
         <div className="relative">
-          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
             required
@@ -395,6 +547,45 @@ export default function RegistrationForm({
             />
           </div>
         </div>
+      </div>
+
+      {/* Avatar Upload */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Profile Picture (Optional)
+        </label>
+        <div className="flex items-center space-x-4">
+          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+            {avatar ? (
+              <img
+                src={URL.createObjectURL(avatar)}
+                alt="Profile preview"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <ImageIcon className="w-6 h-6 text-gray-400" />
+            )}
+          </div>
+          <div>
+            <label htmlFor="avatar-upload" className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Choose File
+            </label>
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileUpload(e, 'avatar')}
+              className="sr-only"
+            />
+            <p className="text-xs text-gray-500 mt-1">JPG, PNG up to 2MB</p>
+          </div>
+        </div>
+        
+        {avatar && (
+          <div className="mt-2 p-2 bg-green-50 rounded-md">
+            <p className="text-sm text-green-800">✓ {avatar.name} selected</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -666,7 +857,7 @@ export default function RegistrationForm({
               id="resume-upload"
               type="file"
               accept=".pdf,.doc,.docx"
-              onChange={handleResumeUpload}
+              onChange={(e) => handleFileUpload(e, 'resume')}
               className="sr-only"
             />
           </div>
@@ -674,7 +865,7 @@ export default function RegistrationForm({
 
           {resume && (
             <div className="mt-3 p-2 bg-green-50 rounded-md">
-              <p className="text-sm text-green-800">✓ {resume.name} uploaded</p>
+              <p className="text-sm text-green-800">✓ {resume.name} selected</p>
             </div>
           )}
         </div>
@@ -693,7 +884,7 @@ export default function RegistrationForm({
             <p className="mt-2 text-sm text-gray-600">
               Already have an account?{" "}
               <button
-                onClick={() => router.push("/login")}
+                onClick={() => setCurrentPage ? setCurrentPage('login') : router.push("/login")}
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
                 Sign in

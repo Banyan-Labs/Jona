@@ -1,5 +1,5 @@
 'use client';
-import supabaseAdmin from '@/lib/supabaseAdmin';
+import {getSupabaseAdmin} from '@/lib/supabaseAdmin';
 
 let _baseURL = '';
 
@@ -22,5 +22,5 @@ export async function handleAdminError(error: unknown): Promise<string> {
 }
 
 export function getAdminSupabaseClient() {
-  return supabaseAdmin;
+  return getSupabaseAdmin;
 }
