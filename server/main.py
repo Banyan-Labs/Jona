@@ -10,7 +10,7 @@ from app.utils.skills_engine import (
     extract_skills,
     extract_skills_by_category
 )
-from sentence_transformers import SentenceTransformer
+#from sentence_transformers import SentenceTransformer
 from app.scrapers.tek_systems import scrape_teksystems
 from app.scrapers.indeed_crawler import crawl_indeed
 from app.scrapers.dice_scraper import scrape_dice
@@ -59,7 +59,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-SKILLS = load_all_skills()
+#SKILLS = load_all_skills()
 
 def get_current_user_id(authorization: str = Header(...)) -> str:
     token = authorization.replace("Bearer ", "")
@@ -484,7 +484,7 @@ def send_resume(payload: SendResumeRequest):
 # # Global skills loading
 # logger.info("Loading skills data...")
 # try:
-#     SKILLS = load_all_skills()
+#     #SKILLS = load_all_skills()
 #     logger.info(f"Skills loaded successfully: {len(SKILLS.get('combined_flat', []))} total skills")
 # except Exception as e:
 #     logger.error(f"Failed to load skills: {e}")
@@ -539,3 +539,13 @@ def send_resume(payload: SendResumeRequest):
 #         reload=True,
 #         log_level="info"
 #     )
+# Start the server
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0", 
+        port=8001,
+        reload=True,
+        log_level="info"
+    )
